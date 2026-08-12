@@ -1,8 +1,8 @@
-from src.agent_search.domain.state import State, ToolResult, Role, Message
-from src.agent_search.domain.decision import Decision, DecisionType
-from src.agent_search.domain.format.decision_prompt import DecisionPrompt
-from src.agent_search.application.llm_service import LLM
-from src.agent_search.application.tool_registry import ToolRegistry
+from src.history_agent.domain.state import State, ToolResult, Message
+from src.history_agent.domain.decision import Decision, DecisionType
+from src.history_agent.domain.format.decision_prompt import DecisionPrompt
+from src.history_agent.application.ports.llm_port import LLM
+from src.history_agent.application.tool_registry import ToolRegistry
 
 
 class Agent:
@@ -13,6 +13,7 @@ class Agent:
         pass
 
     def _decide(self, state: State) -> Decision:
+        # Dựng prompt quyết định dựa trên lịch sử chat, kết quả công cụ
         prompt = DecisionPrompt(
             messages=state.get_messages()[:3],
             tool_results=state.get_tool_results()[:2],
@@ -24,29 +25,27 @@ class Agent:
         )
 
     def _execute(self, tool_decision: Decision) -> ToolResult:
+
         pass
 
     def run(self, message):
-        if message is not None:
-            self.state.messages.append(
-                Message(
-                    role=Role.USER,
-                    content=message
-                )
+        self.state.messages.append(
+            Message(
+                role='user',
+                content=message
             )
-        decision = self._decide(self.state)
-        if decision.type == DecisionType.FINAL:
-            self.state.messages.append(
-                Message(
-                    role=Role.ASSISTANT,
-                    content=decision.answer,
+        )
+        while True:
+            decision = self._decide(self.state)
+            if decision.type == DecisionType.FINAL:
+                self.state.messages.append(
+                    Message(
+                        role='assistant',
+                        content=decision.answer,
+                    )
                 )
-            )
-            return decision.answer
+                return decision.answer
 
-        if decision.type == DecisionType.TOOL:
-            result = self._execute(decision)
-
-            self.state.tool_results.append(result)
-
-            return self.run(None)
+            if decision.type == DecisionType.TOOL:
+                result = self._execute(decision)
+                self.state.tool_results.append(result)

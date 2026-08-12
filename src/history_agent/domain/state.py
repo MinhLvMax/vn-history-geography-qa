@@ -1,15 +1,9 @@
 from pydantic import BaseModel, Field
-from enum import Enum
-
-
-class Role(str, Enum):
-    USER = "user"
-    ASSISTANT = "assistant"
-    SYSTEM = "system"
+from typing import Literal
 
 
 class Message(BaseModel):
-    role: Role
+    role: Literal['user', 'assistant', 'system']
     content: str
 
 

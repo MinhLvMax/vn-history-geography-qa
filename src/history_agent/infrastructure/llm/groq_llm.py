@@ -1,9 +1,9 @@
 from pydantic import BaseModel
 from groq import Groq
 from typing import TypeVar
-from src.application.ports.logger_port import LoggerService
-from src.application.llm_complete_results import CompleteResult
-from src.infrastructure.python_logger import PythonLogger
+from src.history_agent.application.ports.logger_port import LoggerService
+from src.history_agent.application.llm_complete_results import CompleteResult
+from src.history_agent.infrastructure.python_logger import PythonLogger
 
 T = TypeVar("T", bound=BaseModel)  # T là kiểu bất kì nhưng phải kế thừa BaseModel
 
@@ -98,7 +98,7 @@ class GroqLLM:
 
 
 if __name__ == "__main__":
-    from src.config import Config
+    from src.history_agent.config import Config
 
     g = GroqLLM(Config.GROQ_API_KEY)
 

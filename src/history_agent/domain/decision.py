@@ -3,6 +3,7 @@ from typing import Any, Literal
 from pydantic import BaseModel, Field
 
 class DecisionType(str, Enum):
+    # Cần so sánh giá trị thì dùng class str enum
     TOOL = "tool"
     FINAL = "final"
 

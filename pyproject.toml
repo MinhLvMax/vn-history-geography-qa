@@ -1,3 +1,14 @@
 [build-system]
-requires = ["setuptools>=40.8.0", "wheel"]
+requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "vnhisgeoqa"
+version = "0.1.0"
+requires-python = ">=3.12"
+
+dependencies = [
+    "python-dotenv==1.2.2",
+    "groq==1.6.0",
+    "chromadb==1.5.9"
+]

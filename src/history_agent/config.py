@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 class Config:
-    PROJECT_PATH = Path(__file__).resolve().parents[1]  # Đường dẫn folder chính của dự án
+    PROJECT_PATH = Path(__file__).resolve().parents[2]  # Đường dẫn folder chính của dự án
 
     LOGFILES = PROJECT_PATH / "logfiles"  # Đường dẫn đến folder chứa các file log
     LOGFILES.mkdir(exist_ok=True)
@@ -24,12 +24,15 @@ class Config:
     ENV_PATH = Path(PROJECT_PATH) / ".env"
     if not ENV_PATH.exists():
         ENV_PATH.write_text("GROQ_API_KEY=")
+        ENV_PATH.write_text("OPENAI_API_KEY=")
 
     load_dotenv()  # Load các biến môi trường ở file .env
     GROQ_API_KEY = os.getenv("GROQ_API_KEY")  # Load GROQ_API_KEY từ biến môi trường
 
     PROMPTS = DATA / "prompts"
     PROMPTS.mkdir(exist_ok=True)
+
+    VECDB = DATA / ".vecdb"
 
 
 

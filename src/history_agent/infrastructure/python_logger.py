@@ -1,11 +1,12 @@
 import logging
 from logging.handlers import RotatingFileHandler
+from src.history_agent.config import Config
 
 
 class PythonLogger:
-    def __init__(self, name, path, enable_console=True):
+    def __init__(self, name, path=None, enable_console=True):
+        path = path or Config.LOGFILES / 'app.log'
         self.logger = logging.getLogger(name)
-
         self.logger.propagate = False
 
         if self.logger.handlers:
