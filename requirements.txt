@@ -9,11 +9,13 @@ attrs==26.1.0
 bcrypt==5.0.0
 build==1.5.0
 certifi==2026.7.22
+cffi==2.1.1
 charset-normalizer==3.4.9
 chromadb==1.5.9
 click==8.4.2
 colorama==0.4.6
 comm==0.2.3
+cryptography==50.0.0
 debugpy==1.8.21
 distro==1.9.0
 durationpy==0.10
@@ -22,6 +24,8 @@ filelock==3.32.2
 flatbuffers==25.12.19
 frozenlist==1.8.0
 fsspec==2026.7.0
+google-auth==2.56.3
+google-genai==2.18.0
 googleapis-common-protos==1.75.1
 groq==1.6.0
 grpcio==1.83.0
@@ -69,7 +73,10 @@ propcache==0.5.2
 protobuf==7.35.1
 psutil==7.2.2
 pure_eval==0.2.3
+pyasn1==0.6.4
+pyasn1_modules==0.4.2
 pybase64==1.5.0
+pycparser==3.0
 pydantic==2.13.4
 pydantic-settings==2.15.0
 pydantic_core==2.46.4
@@ -100,9 +107,8 @@ typing_extensions==4.16.0
 tzdata==2026.3
 urllib3==2.7.0
 uvicorn==0.52.1
--e git+https://github.com/MinhLvMax/vn-history-geography-qa.git@4b68b59ae688984807c865bcf5f9d0dec8e82c28#egg=vnhisgeoqa
 watchfiles==1.2.0
 wcwidth==0.8.2
 websocket-client==1.9.0
-websockets==17.0.1
+websockets==16.1.1
 yarl==1.24.5

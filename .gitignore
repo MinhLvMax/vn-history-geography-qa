@@ -221,4 +221,6 @@ __marimo__/
 logfiles/
 .venv/
 .vecdb/
-data/history_files/
+
+data/history_books_structured.json
+data/book_dir/
