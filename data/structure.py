@@ -24,11 +24,17 @@ class BookStructurer:
             r")"
             r".*"
         )
+
         chapter_matches = list(re.finditer(
             pattern=chapter_partern,
             string=self._book_content,
             flags=re.MULTILINE | re.IGNORECASE
         ))
+
+        print("Book:", self.book_path)
+        print("Content length:", len(self._book_content))
+        print("Chapters found:", len(chapter_matches))
+
         return chapter_matches
 
     def split_to_paragraph(self, chapter_content):
@@ -38,9 +44,22 @@ class BookStructurer:
             if paragraph.strip()
         ]
 
-    # def split_to_sentence(self, paragraph_content):
-    #     normalized_content = paragraph_content.replace("\n\n", "\n").strip()
-    #     return normalized_content.split(".")
+    def split_to_sentence(self, paragraph_content, sentence_order):
+        sentences = re.split(r'(?<=[.!?])\s+', paragraph_content)
+
+        result = [
+            {
+                'sentence_id': generate_id(),
+                'sentence': sentence,
+                'sentence_order': order,
+                'sentence_length': len(sentence)
+            }
+            for order, sentence in enumerate(sentences, start=sentence_order)
+        ]
+
+        next_sentence_order = sentence_order + len(sentences)
+
+        return result, next_sentence_order
 
     def parse_book_metadata(self) -> dict:
         filename = Path(self.book_path).stem
@@ -87,18 +106,25 @@ class BookStructurer:
         book_metadata = self.parse_book_metadata()
 
         for chapter_order, match in enumerate(chapter_matches):
+            # Lấy chỉ số đầu chương
             chapter_start = match.start()
+            # Lấy chỉ số cuối chương
             chapter_end = chapter_matches[chapter_order + 1].start() if chapter_order + 1 < len(
                 chapter_matches) else len(
                 self._book_content)
 
+            # Cắt lấy nội dung chương
             chapter_content = self._book_content[chapter_start:chapter_end]
+            # Cắt chương thành các đoạn
             paragraphs = self.split_to_paragraph(chapter_content)
             chapter_id = generate_id()
             chapter_length = len(chapter_content)
+            sentence_order = 0
             for paragraph_order, paragraph in enumerate(paragraphs):
                 if len(paragraph) <= 4:
                     continue
+                sentences, new_sentence_order = self.split_to_sentence(paragraph, sentence_order)
+                sentence_order = new_sentence_order
                 data = {
                     **book_metadata,
                     'chapter_id': chapter_id,
@@ -111,6 +137,8 @@ class BookStructurer:
                     "paragraph_order": paragraph_order,
                     'paragraph_length': len(paragraph),
                     'paragraph_content': paragraph,
+                    # Nên thêm 2 key là danh sách câu và danh từ nữa
+                    'sentences': sentences
                 }
                 self.data_to_save.append(data)
 
@@ -131,8 +159,9 @@ def structure_books(book_dir: Path) -> list[dict]:
 
 
 if __name__ == '__main__':
-    BOOK_DIR = 'book_dir'
-    HISTORY_STRUCTURE_DATA = Path("history_books_structured.json")
+    input_config = read_json_file(file_path='config.json')
+    BOOK_DIR = input_config['books']
+    HISTORY_STRUCTURE_DATA = Path(input_config['structured'])
 
     all_books = structure_books(Path(BOOK_DIR))
     save_json(all_books, str(HISTORY_STRUCTURE_DATA))
