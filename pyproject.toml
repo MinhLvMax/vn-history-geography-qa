@@ -4,12 +4,30 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vnhisgeoqa"
-version = "0.1.0"
+version = "0.2.0"
+description = "Hệ thống Agentic Hybrid RAG (Vector + Knowledge Graph) hỏi đáp Lịch sử & Địa lý Việt Nam theo kiến trúc Clean Architecture"
 requires-python = ">=3.12"
 
+# Danh sách các thư viện chính mà dự án trực tiếp import trong thư mục src/
 dependencies = [
-    "python-dotenv==1.2.2",
-    "groq==1.6.0",
-    "chromadb==1.5.9",
-    "pandas==3.0.5"
+    # --- Quản lý cấu hình & Dữ liệu (Schema Validation) ---
+    "python-dotenv>=1.0.0",
+    "pydantic>=2.0.0",
+
+    # --- Các nhà cung cấp LLM (OpenAI, Groq, và HTTP client cho Ollama) ---
+    "openai>=1.50.0",
+    "groq>=0.11.0",
+    "httpx>=0.27.0",
+
+    # --- Pipeline Hybrid RAG (Qdrant Vector DB, Neo4j Graph DB, Bi-Encoder & Cross-Encoder) ---
+    "qdrant-client>=1.12.0",
+    "neo4j>=5.20.0",
+    "sentence-transformers>=3.0.0",
+
+    # --- Cơ sở dữ liệu quan hệ (PostgreSQL / SQLite qua SQLAlchemy ORM) ---
+    "sqlalchemy>=2.0.0",
+    "psycopg2-binary>=2.9.9",
+
+    # --- Giao diện Web UI ---
+    "nicegui>=2.0.0",
 ]
