@@ -225,3 +225,4 @@ logfiles/
 data/history_books_structured.json
 data/book_dir/
 chroma_db/
+data/

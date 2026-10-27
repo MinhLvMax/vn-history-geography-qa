@@ -1,0 +1,57 @@
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant-server
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - ./data/qdrant_storage:/qdrant/storage:z
+    restart: always
+
+  neo4j:
+    image: neo4j:enterprise
+    container_name: neo4j-app
+    ports:
+      - "7474:7474"   # Giao diện web HTTP
+      - "7687:7687"   # Cổng kết nối Bolt (dùng cho Python Driver / Code)
+    environment:
+      - NEO4J_AUTH=neo4j/${NEO4J_PASSWORD}
+      - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
+      # Cấu hình bộ nhớ cơ bản (tuỳ chỉnh theo RAM máy)
+      - NEO4J_server_memory_pagecache_size=1G
+      - NEO4J_server_memory_heap_initial__size=1G
+      - NEO4J_server_memory_heap_max__size=2G
+    volumes:
+      - ./data/neo4j/data:/data
+      - ./data/neo4j/import:/var/lib/neo4j/import
+    restart: always
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - ./data/postgres_data:/var/lib/postgresql/data
+    restart: always
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin-web
+    ports:
+      - "5050:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
+    volumes:
+      - ./data/pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    restart: always
+
+
