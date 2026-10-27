@@ -394,7 +394,11 @@ class WebApprover(ApprovalPort):
 def _describe_tool_call(tool_call: ToolCallMessage.ToolCall) -> str:
     """Nhãn ngắn cho một lần gọi tool, kèm tham số chính (đường dẫn / từ khóa) để người dùng theo dõi."""
     main_arg = next(
-        (tool_call.kwargs[key] for key in ("path", "root", "file_path", "query") if tool_call.kwargs.get(key)),
+        (
+            tool_call.kwargs[key]
+            for key in ("path", "root", "file_path", "query", "entities", "chunk_ids")
+            if tool_call.kwargs.get(key)
+        ),
         None,
     )
     if tool_call.kwargs.get("query") and main_arg != tool_call.kwargs["query"]:

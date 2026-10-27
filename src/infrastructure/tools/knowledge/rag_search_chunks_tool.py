@@ -1,4 +1,4 @@
-"""Infrastructure Tools - Công cụ tra cứu tri thức Lịch sử & Địa lý Việt Nam qua RAG Pipeline.
+"""Infrastructure Tools - Công cụ tìm kiếm ngữ nghĩa các đoạn tư liệu qua Vector RAG Pipeline.
 """
 
 from dataclasses import dataclass
@@ -11,14 +11,14 @@ from src.domain.models import ContentPart, TextPart
 from src.domain.ports import Tool
 
 
-class SearchKnowledgeTool(Tool):
-    """Công cụ tra cứu tài liệu Lịch sử & Địa lý Việt Nam từ Qdrant Vector DB + PhoRanker."""
+class RAGSearchChunksTool(Tool):
+    """Công cụ tìm kiếm ngữ nghĩa các đoạn tư liệu Lịch sử & Địa lý Việt Nam (Vector DB + Reranker)."""
 
-    tool_name = "search_vn_history_geography"
+    tool_name = "rag_search_chunks"
     tool_description = (
-        "Tra cứu kiến thức và tư liệu gốc về Lịch sử và Địa lý Việt Nam. "
-        "Sử dụng công cụ này khi cần tìm thông tin về các triều đại, nhân vật lịch sử, "
-        "sự kiện, trận đánh, niên đại, địa danh hoặc vùng miền Việt Nam. "
+        "Tìm kiếm theo ngữ nghĩa các đoạn văn bản tư liệu gốc về Lịch sử và Địa lý Việt Nam. "
+        "Sử dụng công cụ này khi cần tìm nội dung chi tiết, diễn biến sự kiện, bối cảnh lịch sử, "
+        "nhân vật, triều đại, trận đánh, niên đại hoặc địa danh. "
         "Nên truyền vào câu hỏi hoặc cụm từ khóa tiếng Việt rõ ràng, tập trung vào một chủ đề cụ thể."
     )
 
@@ -26,7 +26,7 @@ class SearchKnowledgeTool(Tool):
         query: str = Field(
             ...,
             description=(
-                "Câu hỏi hoặc cụm từ khóa tiếng Việt cần tra cứu trong kho tư liệu "
+                "Câu hỏi hoặc cụm từ khóa tiếng Việt cần tìm trong kho tư liệu "
                 "(ví dụ: 'Chiến thắng Bạch Đằng năm 938 của Ngô Quyền', 'Sự thành lập nhà Trần năm 1225')."
             ),
         )
@@ -39,7 +39,7 @@ class SearchKnowledgeTool(Tool):
 
     @dataclass
     class Result:
-        """Kết quả trả về của công cụ tra cứu RAG."""
+        """Kết quả trả về của công cụ tìm kiếm đoạn tư liệu."""
 
         query: str
         chunks: list[RetrievedChunk]
@@ -62,7 +62,7 @@ class SearchKnowledgeTool(Tool):
                     else ""
                 )
                 lines.append(
-                    f"--- [Tư liệu #{idx} | Nguồn: {chunk.chunk_id} | "
+                    f"--- [Tư liệu #{idx} | chunk_id: {chunk.chunk_id} | "
                     f"Điểm Vector: {chunk.vector_score:.4f}{rerank_info}] ---\n"
                     f"{chunk.text}\n"
                 )

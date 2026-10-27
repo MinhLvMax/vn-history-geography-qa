@@ -11,16 +11,17 @@ from src.domain.models import ContentPart, TextPart
 from src.domain.ports import Tool
 
 
-class ReadChunksByIdsTool(Tool):
+class RAGReadChunksTool(Tool):
     """Công cụ lấy toàn văn nội dung các trang/đoạn tư liệu theo danh sách mã chunk_id."""
 
-    tool_name = "get_vn_history_chunks_by_ids"
+    tool_name = "rag_read_chunks"
     tool_description = (
-        "Đọc trực tiếp nội dung của một hoặc nhiều đoạn/trang tư liệu theo mã `chunk_id` "
+        "Đọc trực tiếp toàn văn nội dung của một hoặc nhiều đoạn/trang tư liệu theo mã `chunk_id` "
         "(ví dụ: ['tap_02_trang_0049', 'tap_02_trang_0050']). "
         "Hãy sử dụng công cụ này khi: "
-        "(1) Một đoạn tư liệu tìm được ở bước trước bị cắt lửng câu ở đầu hoặc cuối trang và bạn cần đọc trang liền trước/liền sau để hiểu trọn vẹn ý; "
-        "(2) Các kết quả tìm kiếm bị nhảy cóc số trang (ví dụ có trang 0048 và trang 0055 nhưng thiếu diễn biến ở các trang 0049, 0050, 0053, 0054 ở giữa)."
+        "(1) Một đoạn tư liệu tìm được bị cắt lửng câu ở đầu hoặc cuối trang và cần đọc trang liền trước/liền sau để hiểu trọn vẹn ý; "
+        "(2) Các kết quả tìm kiếm bị nhảy cóc số trang (ví dụ có trang 0048 và trang 0055 nhưng thiếu diễn biến ở các trang giữa); "
+        "(3) Bạn tìm thấy mã `chunk_id` từ kết quả đồ thị tri thức và muốn đọc toàn văn trang sách gốc đó."
     )
 
     class ToolKwargs(Tool.ToolKwargs):
@@ -57,7 +58,7 @@ class ReadChunksByIdsTool(Tool):
             ]
             for idx, chunk in enumerate(self.chunks, start=1):
                 lines.append(
-                    f"--- [Tư liệu #{idx} | Nguồn: {chunk.chunk_id}] ---\n"
+                    f"--- [Tư liệu #{idx} | chunk_id: {chunk.chunk_id}] ---\n"
                     f"{chunk.text}\n"
                 )
             if missing_ids:

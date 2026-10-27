@@ -1,9 +1,10 @@
-"""Application RAG Service - Các cổng (Ports) và dịch vụ điều phối luồng truy xuất 2 tầng (Two-Stage RAG).
+"""Application RAG Service - Các cổng (Ports) và dịch vụ điều phối truy xuất tri thức (Vector RAG & GraphRAG).
 
-Luồng chuẩn:
+Bao gồm:
 1. EmbedderPort: Chuyển câu truy vấn thành vector (Bi-Encoder).
 2. VectorRetrieverPort: Truy xuất nhanh Top-K đoạn văn bản ứng viên từ Vector DB (Qdrant) hoặc lấy theo chunk_ids.
 3. RerankerPort: Chấm điểm sâu cặp (query, chunk) bằng Cross-Encoder (PhoRanker) và lọc lấy Top-N.
+4. KnowledgeGraphRetrieverPort: Truy xuất mạng lưới thực thể và mối quan hệ từ CSDL Đồ thị (Neo4j).
 """
 
 from dataclasses import dataclass, field
@@ -26,6 +27,36 @@ class RetrievedChunk:
     def final_score(self) -> float:
         """Điểm xếp hạng cuối cùng (ưu tiên điểm rerank nếu có)."""
         return self.rerank_score if self.rerank_score is not None else self.vector_score
+
+
+@dataclass
+class GraphNode:
+    """Một nút thực thể được truy xuất từ cơ sở dữ liệu đồ thị (nhãn được đọc động từ CSDL)."""
+
+    name: str
+    labels: list[str] = field(default_factory=list)
+    description: str = ""
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class GraphRelation:
+    """Một mối quan hệ có hướng giữa hai thực thể kèm bằng chứng và mã nguồn (loại quan hệ đọc động từ CSDL)."""
+
+    source: GraphNode
+    relation_type: str
+    target: GraphNode
+    evidence: str = ""
+    chunk_id: str = ""
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class GraphSearchResult:
+    """Kết quả truy xuất đồ thị con (Subgraph) từ CSDL Đồ thị."""
+
+    matched_nodes: list[GraphNode] = field(default_factory=list)
+    relations: list[GraphRelation] = field(default_factory=list)
 
 
 @runtime_checkable
@@ -73,14 +104,29 @@ class RerankerPort(Protocol):
         ...
 
 
+@runtime_checkable
+class KnowledgeGraphRetrieverPort(Protocol):
+    """Cổng truy xuất thực thể và mối quan hệ từ cơ sở dữ liệu Đồ thị (Knowledge Graph)."""
+
+    def search_subgraph(
+        self,
+        entities: list[str],
+        hop_depth: int = 1,
+        limit: int = 15,
+    ) -> GraphSearchResult:
+        """Tìm các thực thể theo danh sách tên/từ khóa và mở rộng láng giềng 1-2 bước."""
+        ...
+
+
 class RagSearchService:
-    """Application Service điều phối pipeline RAG 2 tầng (Retrieve -> Rerank) và tra cứu theo chunk_id."""
+    """Application Service điều phối pipeline Vector RAG 2 tầng, đọc chunk theo ID và truy vấn Đồ thị Tri thức."""
 
     def __init__(
         self,
         embedder: EmbedderPort,
         retriever: VectorRetrieverPort,
         reranker: RerankerPort | None = None,
+        graph_retriever: KnowledgeGraphRetrieverPort | None = None,
         logger: LoggerPort | None = None,
         default_retrieve_top_k: int = 20,
         default_rerank_top_n: int = 5,
@@ -88,6 +134,7 @@ class RagSearchService:
         self.embedder = embedder
         self.retriever = retriever
         self.reranker = reranker
+        self.graph_retriever = graph_retriever
         self.logger: LoggerPort = logger or NullLogger()
         self.default_retrieve_top_k = default_retrieve_top_k
         self.default_rerank_top_n = default_rerank_top_n
@@ -159,3 +206,27 @@ class RagSearchService:
         )
         self.logger.info(f"[RAG] Đã tìm thấy {len(chunks)}/{len(cleaned_ids)} chunk theo ID")
         return chunks
+
+    def search_graph(
+        self,
+        entities: list[str],
+        hop_depth: int = 1,
+        limit: int = 15,
+    ) -> GraphSearchResult:
+        """Truy vấn các thực thể và mối quan hệ liên kết trên Đồ thị Tri thức."""
+        cleaned_entities = [e.strip() for e in entities if e and e.strip()]
+        if not cleaned_entities or self.graph_retriever is None:
+            return GraphSearchResult()
+
+        self.logger.info(
+            f"[GraphRAG] Tìm kiếm đồ thị cho thực thể: {cleaned_entities} (hop_depth={hop_depth}, limit={limit})"
+        )
+        result = self.graph_retriever.search_subgraph(
+            entities=cleaned_entities,
+            hop_depth=hop_depth,
+            limit=limit,
+        )
+        self.logger.info(
+            f"[GraphRAG] Tìm thấy {len(result.matched_nodes)} thực thể và {len(result.relations)} mối quan hệ"
+        )
+        return result

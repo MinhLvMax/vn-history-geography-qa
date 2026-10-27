@@ -21,6 +21,7 @@ from src.application.context_strategy import (
 from src.application.model_probe import ModelProbePort
 from src.application.rag_service import (
     EmbedderPort,
+    KnowledgeGraphRetrieverPort,
     RagSearchService,
     RerankerPort,
     VectorRetrieverPort,
@@ -74,9 +75,11 @@ from src.infrastructure.persistence.sqlalchemy.repositories import (
 from src.infrastructure.security.scrypt_password_hasher import ScryptPasswordHasher
 from src.infrastructure.rag.cross_encoder_reranker import CrossEncoderReranker
 from src.infrastructure.rag.huggingface_embedder import HuggingFaceEmbedder
+from src.infrastructure.rag.neo4j_graph_retriever import Neo4jKnowledgeGraphRetriever
 from src.infrastructure.rag.qdrant_retriever import QdrantVectorRetriever
-from src.infrastructure.tools.knowledge.read_chunks_by_ids_tool import ReadChunksByIdsTool
-from src.infrastructure.tools.knowledge.search_knowledge_tool import SearchKnowledgeTool
+from src.infrastructure.tools.knowledge.rag_read_chunks_tool import RAGReadChunksTool
+from src.infrastructure.tools.knowledge.rag_search_graph_tool import RAGSearchGraphTool
+from src.infrastructure.tools.knowledge.rag_search_chunks_tool import RAGSearchChunksTool
 from src.presentation.model_catalog import ModelCatalog
 
 # Nhà cung cấp có adapter trong build_llm. Đây là phần duy nhất còn nằm trong code;
@@ -97,6 +100,7 @@ class Bootstrap:
         self._embedder: EmbedderPort | None = None
         self._vector_retriever: VectorRetrieverPort | None = None
         self._reranker: RerankerPort | None = None
+        self._graph_retriever: KnowledgeGraphRetrieverPort | None = None
         self._rag_service: RagSearchService | None = None
 
     # --- Tài nguyên (tạm thời hard-code, sau này có thể thay bằng file / DB / API) ---
@@ -107,7 +111,7 @@ class Bootstrap:
             "Bạn là trợ lý AI chuyên gia về Lịch sử và Địa lý Việt Nam, hoạt động theo tiêu chuẩn kiểm chứng học thuật trung thực.\n\n"
             "NGUYÊN TẮC HOẠT ĐỘNG BẮT BUỘC:\n\n"
             "1. QUY TRÌNH TRA CỨU & KHAI THÁC TƯ LIỆU:\n"
-            "   - Mọi câu hỏi về sự kiện, nhân vật, trận đánh, địa danh hoặc niên đại lịch sử BẮT BUỘC phải được tra cứu bằng các công cụ tìm kiếm được cung cấp trước khi trả lời.\n"
+            "   - Mọi câu hỏi về sự kiện, nhân vật, trận đánh, địa danh hoặc niên đại lịch sử BẮT BUỘC phải được tra cứu bằng các công cụ tìm kiếm được cung cấp trước khi trả lời (truy vấn ngữ nghĩa và truy vấn đồ thị).\n"
             "   - Nhận diện trang khuyết: Khi đọc các đoạn tư liệu tìm thấy, nếu thấy văn bản bị ngắt quãng giữa chừng hoặc số trang bị nhảy cóc (ví dụ có trang mở đầu và trang kết thúc nhưng thiếu các trang diễn biến ở giữa), bạn PHẢI chủ động sử dụng công cụ đọc trang theo mã định danh để lấy bổ sung các trang còn thiếu trước khi tổng hợp.\n"
             "   - Tự động tinh chỉnh truy vấn: Nếu kết quả tìm kiếm ban đầu chỉ toàn thông tin phụ lục, tiểu sử danh nhân mà thiếu diễn biến chiến sự, hãy chủ động tìm kiếm tiếp với các từ khóa chuyên sâu hơn về diễn biến trận đánh hoặc chiến dịch đó.\n\n"
             "2. TRUNG THỰC TUYỆT ĐỐI VỚI VĂN BẢN (CẤM SUY DIỄN & BỔ SUNG KIẾN THỨC BÊN NGOÀI):\n"
@@ -440,13 +444,25 @@ class Bootstrap:
             )
         return self._reranker
 
+    def build_graph_retriever(self) -> KnowledgeGraphRetrieverPort:
+        """Khởi tạo bộ truy xuất Đồ thị Tri thức Neo4j."""
+        if self._graph_retriever is None:
+            self._graph_retriever = Neo4jKnowledgeGraphRetriever(
+                uri=self.app_config.neo4j_uri,
+                user=self.app_config.neo4j_user,
+                password=self.app_config.neo4j_password,
+                logger=self.build_logger(),
+            )
+        return self._graph_retriever
+
     def build_rag_service(self) -> RagSearchService:
-        """Khởi tạo dịch vụ tìm kiếm RAG 2 tầng (Retrieve Top-K -> Rerank Top-N)."""
+        """Khởi tạo dịch vụ tìm kiếm RAG (Vector 2 tầng + Knowledge Graph)."""
         if self._rag_service is None:
             self._rag_service = RagSearchService(
                 embedder=self.build_embedder(),
                 retriever=self.build_vector_retriever(),
                 reranker=self.build_reranker(),
+                graph_retriever=self.build_graph_retriever(),
                 logger=self.build_logger(),
                 default_retrieve_top_k=20,
                 default_rerank_top_n=5,
@@ -454,11 +470,12 @@ class Bootstrap:
         return self._rag_service
 
     def build_tools(self) -> list[Tool]:
-        """Danh sách tool của Agent (gồm RAG Vector Search + Reranker và Đọc chunk theo ID)."""
+        """Danh sách tool của Agent (gồm Vector Search, Graph Search và Đọc chunk theo ID)."""
         rag_service = self.build_rag_service()
         return [
-            SearchKnowledgeTool(rag_service=rag_service),
-            ReadChunksByIdsTool(rag_service=rag_service),
+            RAGSearchChunksTool(rag_service=rag_service),
+            RAGSearchGraphTool(rag_service=rag_service),
+            RAGReadChunksTool(rag_service=rag_service),
         ]
 
     def build_tool_executor(self) -> ToolExecutorService:

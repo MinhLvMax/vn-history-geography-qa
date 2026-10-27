@@ -3,31 +3,29 @@
 Triển khai kiến trúc chuẩn công nghiệp (tương tự Claude Code / Anthropic Agent / SWE-agent):
 1. Chia lịch sử thành các lượt hoàn chỉnh (Turn), mỗi Turn bắt đầu bằng một `UserMessage`
    (đảm bảo không bao giờ cắt rời giữa `ToolCallMessage` và `ToolResultMessage`).
-2. Observation Masking:
+2. Observation Masking (Tổng quát, không phụ thuộc định dạng riêng của bất kỳ Tool nào):
    - Giữ nguyên văn 100% `ToolResultMessage` cho `keep_raw_tool_turns` lượt gần nhất
      để trả lời mượt các câu hỏi nối tiếp trực tiếp (follow-up).
    - Với các lượt cũ hơn, giữ nguyên `UserMessage`, `AssistantMessage` và `ToolCallMessage`,
-     nhưng thu gọn nội dung dài của `ToolResultMessage` thành danh sách các mã nguồn `chunk_id`
-     đã đọc (để nếu cần xem lại nguyên văn, Agent có thể gọi `get_vn_history_chunks_by_ids`).
+     đồng thời tự động tóm tắt nội dung dài của `ToolResultMessage` dựa trên ngữ cảnh lệnh gọi
+     (`ToolCall`) và cấu trúc văn bản của kết quả.
 3. Sliding Window + Character Budget:
    - Chỉ giữ tối đa `max_turns` lượt gần nhất và tự động thu gọn thêm nếu vượt ngân sách ký tự.
 """
 
 from __future__ import annotations
 
-import re
+import json
 from typing import Protocol, runtime_checkable
 
 from src.domain.models import (
     Message,
     TextPart,
+    ToolCallMessage,
     ToolResultMessage,
     UserMessage,
     parts_to_text,
 )
-
-# Regex trích xuất mã nguồn dạng "Nguồn: tap_02_trang_0048" từ nội dung ToolResult
-_SOURCE_ID_PATTERN = re.compile(r"Nguồn:\s*([A-Za-z0-9_\-]+)")
 
 
 @runtime_checkable
@@ -47,7 +45,7 @@ class NoOpContextStrategy(ContextStrategyPort):
 
 
 class ObservationMaskingWindowStrategy(ContextStrategyPort):
-    """Chiến lược Cửa sổ trượt kết hợp Observation Masking (chuẩn Claude Code / SWE-agent)."""
+    """Chiến lược Cửa sổ trượt kết hợp Observation Masking tổng quát cho mọi loại Tool."""
 
     def __init__(
         self,
@@ -55,6 +53,8 @@ class ObservationMaskingWindowStrategy(ContextStrategyPort):
         keep_raw_tool_turns: int = 1,
         max_history_chars: int = 7000,
         min_chars_to_mask: int = 400,
+        max_highlights: int = 6,
+        preview_chars: int = 200,
     ):
         """Khởi tạo chiến lược quản lý bối cảnh.
 
@@ -63,11 +63,15 @@ class ObservationMaskingWindowStrategy(ContextStrategyPort):
             keep_raw_tool_turns: Số lượt hoàn chỉnh gần nhất vẫn giữ nguyên văn 100% nội dung ToolResult.
             max_history_chars: Ngưỡng tổng số ký tự tối đa của lịch sử trước khi bắt buộc thu gọn cả lượt gần nhất.
             min_chars_to_mask: Chỉ thu gọn các ToolResult có độ dài vượt quá số ký tự này.
+            max_highlights: Số dòng tiêu đề/đề mục tối đa giữ lại khi tóm tắt cấu trúc một ToolResult.
+            preview_chars: Độ dài đoạn văn bản xem trước khi ToolResult không có các dòng tiêu đề cấu trúc.
         """
         self.max_turns = max(1, max_turns)
         self.keep_raw_tool_turns = max(0, keep_raw_tool_turns)
         self.max_history_chars = max(2000, max_history_chars)
         self.min_chars_to_mask = max(100, min_chars_to_mask)
+        self.max_highlights = max(1, max_highlights)
+        self.preview_chars = max(80, preview_chars)
 
     def prepare_history(self, history: list[Message]) -> list[Message]:
         if not history:
@@ -90,8 +94,7 @@ class ObservationMaskingWindowStrategy(ContextStrategyPort):
                 processed_turns.append(list(turn))
 
         # Bước 3: Kiểm tra tổng ngân sách ký tự (`max_history_chars`).
-        # Nếu vẫn vượt ngưỡng (ví dụ lượt liền trước lấy quá nhiều trang sách dài),
-        # thu gọn tiếp ToolResult của các lượt còn lại từ cũ đến mới.
+        # Nếu vẫn vượt ngưỡng, thu gọn tiếp ToolResult của các lượt còn lại từ cũ đến mới.
         for idx in range(raw_cutoff_idx, num_turns):
             if self._count_turns_chars(processed_turns) <= self.max_history_chars:
                 break
@@ -124,35 +127,77 @@ class ObservationMaskingWindowStrategy(ContextStrategyPort):
         return turns
 
     def _mask_turn_tool_results(self, turn: list[Message]) -> list[Message]:
-        """Thu gọn các ToolResultMessage dài trong một Turn thành bản tóm tắt mã nguồn."""
+        """Thu gọn các ToolResultMessage dài trong một Turn dựa trên ngữ cảnh ToolCall và cấu trúc văn bản."""
+        calls_by_id: dict[str, ToolCallMessage.ToolCall] = {}
+        for msg in turn:
+            if isinstance(msg, ToolCallMessage):
+                for tc in msg.tool_calls:
+                    calls_by_id[tc.id] = tc
+
         masked_turn: list[Message] = []
         for msg in turn:
             if isinstance(msg, ToolResultMessage) and not msg.is_error:
                 raw_text = parts_to_text(msg.content)
                 if len(raw_text) > self.min_chars_to_mask:
-                    masked_turn.append(self._create_masked_tool_result(msg, raw_text))
+                    matched_call = calls_by_id.get(msg.tool_call_id)
+                    masked_turn.append(
+                        self._create_masked_tool_result(msg, raw_text, matched_call)
+                    )
                     continue
             masked_turn.append(msg)
         return masked_turn
 
-    @staticmethod
     def _create_masked_tool_result(
-        original: ToolResultMessage, raw_text: str
+        self,
+        original: ToolResultMessage,
+        raw_text: str,
+        tool_call: ToolCallMessage.ToolCall | None = None,
     ) -> ToolResultMessage:
-        """Tạo ToolResultMessage rút gọn nhưng giữ nguyên danh sách mã chunk_id đã tra cứu."""
-        source_ids = list(dict.fromkeys(_SOURCE_ID_PATTERN.findall(raw_text)))
-        if source_ids:
-            sources_str = ", ".join(source_ids)
-            summary = (
-                f"[Nội dung tư liệu từ lượt trước đã được thu gọn để tối ưu bộ nhớ. "
-                f"Các mã nguồn đã tra cứu: {sources_str}. "
-                f"Nếu cần đọc lại nguyên văn, hãy gọi công cụ `get_vn_history_chunks_by_ids`.]"
-            )
-        else:
-            preview = raw_text[:150].replace("\n", " ").strip()
-            summary = (
-                f"[Kết quả công cụ '{original.name}' ở lượt trước đã được thu gọn: {preview}...]"
-            )
+        """Tóm tắt tổng quát kết quả của bất kỳ Tool nào mà không phụ thuộc định dạng riêng của Tool."""
+        call_desc = f"'{original.name}'"
+        if tool_call and tool_call.kwargs:
+            args_str = json.dumps(tool_call.kwargs, ensure_ascii=False)
+            if len(args_str) > 120:
+                args_str = args_str[:117] + "..."
+            call_desc = f"'{original.name}({args_str})'"
+
+        non_empty_lines = [line.strip() for line in raw_text.splitlines() if line.strip()]
+        lead_line = non_empty_lines[0] if non_empty_lines else ""
+        if len(lead_line) > 160:
+            lead_line = lead_line[:157] + "..."
+
+        # Trích xuất các dòng tiêu đề/mục đánh dấu cấu trúc (nếu kết quả có chia mục hoặc danh sách)
+        structural_lines: list[str] = []
+        for line in non_empty_lines[1:]:
+            if (
+                line.startswith("---")
+                or line.startswith("#")
+                or line.startswith("- [")
+                or line.startswith("* [")
+                or (line[:2].isdigit() and line[1:3] in (". ", ") "))
+            ):
+                compact = line.strip("-# ").strip()
+                if compact and compact not in structural_lines:
+                    structural_lines.append(compact[:140])
+            if len(structural_lines) >= self.max_highlights:
+                break
+
+        details: list[str] = []
+        if lead_line:
+            details.append(lead_line)
+        if structural_lines:
+            details.append("Các mục chính: " + " ; ".join(structural_lines))
+        elif len(non_empty_lines) > 1:
+            body_preview = " ".join(non_empty_lines[1:])[: self.preview_chars].strip()
+            if body_preview:
+                details.append(f"Trích đoạn: {body_preview}...")
+
+        detail_text = " | ".join(details) if details else raw_text[: self.preview_chars].strip()
+        summary = (
+            f"[Kết quả từ công cụ {call_desc} ở lượt trước ({len(raw_text)} ký tự, "
+            f"{len(non_empty_lines)} dòng) đã được thu gọn: {detail_text}. "
+            f"Nếu cần xem lại chi tiết, hãy gọi lại công cụ tương ứng.]"
+        )
 
         return ToolResultMessage(
             tool_call_id=original.tool_call_id,
