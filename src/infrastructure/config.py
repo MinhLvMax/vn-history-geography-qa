@@ -29,9 +29,9 @@ class Config:
     )
     ollama_base_url: str = field(
         default_factory=lambda: (
-            os.getenv("OLLAMA_BASE_URL")
-            or os.getenv("OLLAMA_HOST")
-            or "http://localhost:11434"
+                os.getenv("OLLAMA_BASE_URL")
+                or os.getenv("OLLAMA_HOST")
+                or "http://localhost:11434"
         )
     )
     ollama_api_key: str | None = field(
@@ -81,12 +81,10 @@ class Config:
         default_factory=lambda: os.getenv("QDRANT_COLLECTION", "vnhis")
     )
 
-    downloads = Path.home() / "Downloads"
-
     @property
     def path_folder_log(self) -> Path:
         """Thư mục lưu trữ log."""
-        path = self.downloads / "logs"
+        path = self.project_path / "logfiles"
         path.mkdir(parents=True, exist_ok=True)
         return path
 
