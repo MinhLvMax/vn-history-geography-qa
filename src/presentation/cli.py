@@ -109,7 +109,7 @@ def run_cli(
     )
 
     print("=" * 60)
-    print("   🤖 AGENT V2 CLI INTERFACE")
+    print("   🎋 VNHisChat — HỎI ĐÁP LỊCH SỬ & ĐỊA LÝ VIỆT NAM")
     print("   Gõ '/model' để đổi model, 'exit' hoặc 'quit' để thoát")
     print("=" * 60)
 

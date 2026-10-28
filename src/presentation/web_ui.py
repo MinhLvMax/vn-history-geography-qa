@@ -52,28 +52,52 @@ from src.presentation.model_catalog import (
     reasoning_modes,
 )
 
-APP_NAME = "Agent"
-PRIMARY_COLOR = "#4f46e5"
+APP_NAME = "VNHisChat"
+PRIMARY_COLOR = "#2d6a4f"     # Xanh lá cây tre
+SECONDARY_COLOR = "#6c4a35"   # Nâu đất
 TITLE_MAX_LENGTH = 48
 TOKEN_KEY = "token"
 
 SUGGESTIONS = [
-    "Viết một đoạn giới thiệu ngắn về bản thân bạn",
-    "Tạo file ghi chú todo.md với 3 việc cần làm hôm nay",
-    "Giải thích kiến trúc Clean Architecture thật dễ hiểu",
+    "Trận Bạch Đằng năm 938 của Ngô Quyền diễn ra như thế nào và có ý nghĩa lịch sử gì?",
+    "Vương triều nhà Lý dời đô về Thăng Long vào năm nào và vì sao?",
+    "Chiến dịch Điện Biên Phủ năm 1954 kéo dài bao nhiêu ngày và chia làm mấy đợt?",
+    "Quá trình xác lập và thực thi chủ quyền đối với quần đảo Hoàng Sa, Trường Sa qua các thời kỳ?",
 ]
+
+TOOL_METADATA = {
+    "rag_search_chunks": {
+        "label": "Tra cứu tư liệu văn bản (Vector)",
+        "icon": "travel_explore",
+    },
+    "rag_search_graph": {
+        "label": "Khai phá đồ thị tri thức (Graph)",
+        "icon": "hub",
+    },
+    "rag_read_chunks": {
+        "label": "Đọc trang sách gốc",
+        "icon": "menu_book",
+    },
+}
 
 _HEAD_HTML = """
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  body { font-family: 'Inter', system-ui, sans-serif; background: #f8fafc; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #f7f9f6; color: #1c1917; }
   .nicegui-content { padding: 0 !important; }
   .chat-markdown p { margin: 0 0 .6rem 0; }
   .chat-markdown p:last-child { margin-bottom: 0; }
-  .chat-markdown pre { background: #0f172a; color: #e2e8f0; padding: .75rem 1rem;
+  .chat-markdown pre { background: #1c2820; color: #e2e8f0; padding: .75rem 1rem;
                        border-radius: .6rem; overflow-x: auto; font-size: .85rem; }
-  .chat-markdown code { font-size: .85em; }
+  .chat-markdown code {
+    background: #eef2ed;
+    color: #2d6a4f;
+    padding: 0.15rem 0.35rem;
+    border-radius: 0.3rem;
+    font-size: 0.88em;
+    font-weight: 500;
+  }
   /* Cuộc trò chuyện & nút 3 chấm */
   .conv-item {
     width: 100% !important;
@@ -127,7 +151,7 @@ _HEAD_HTML = """
     box-sizing: border-box !important;
     overflow-x: hidden !important;
   }
-  .typing span { width: 7px; height: 7px; border-radius: 9999px; background: #94a3b8;
+  .typing span { width: 7px; height: 7px; border-radius: 9999px; background: #2d6a4f;
                  display: inline-block; animation: blink 1.2s infinite both; }
   .typing span:nth-child(2) { animation-delay: .2s; }
   .typing span:nth-child(3) { animation-delay: .4s; }
@@ -158,8 +182,8 @@ _HEAD_HTML = """
   .sidebar-resizer:hover::after,
   .sidebar-resizer.is-resizing::after {
     width: 3px;
-    background-color: #6366f1;
-    box-shadow: 0 0 8px rgba(99, 102, 241, 0.6);
+    background-color: #52b788;
+    box-shadow: 0 0 8px rgba(82, 183, 136, 0.6);
   }
   body.resizing-sidebar {
     user-select: none !important;
@@ -339,7 +363,7 @@ class WebUseCases:
 
 def _apply_theme() -> None:
     ui.add_head_html(_HEAD_HTML)
-    ui.colors(primary=PRIMARY_COLOR)
+    ui.colors(primary=PRIMARY_COLOR, secondary=SECONDARY_COLOR)
 
 
 class WebApprover(ApprovalPort):
@@ -370,20 +394,20 @@ class WebApprover(ApprovalPort):
                 with ui.element("div").classes(
                     "w-10 h-10 shrink-0 rounded-full bg-amber-100 flex items-center justify-center"
                 ):
-                    ui.icon("shield", size="22px").classes("text-amber-600")
-                ui.label(title).classes("text-lg font-semibold text-slate-900")
+                    ui.icon("shield", size="22px").classes("text-amber-700")
+                ui.label(title).classes("text-lg font-semibold text-stone-900")
             ui.label(
-                "Thao tác này sẽ thay đổi file / thư mục bên ngoài workspace của Agent. "
-                "Chỉ cho phép nếu bạn đã yêu cầu việc này."
-            ).classes("text-sm text-slate-500")
+                "Yêu cầu xác nhận từ trợ lý VNHisChat. "
+                "Chỉ cho phép nếu bạn đồng ý thực hiện thao tác này."
+            ).classes("text-sm text-stone-600")
             ui.label(details).classes(
-                "w-full text-xs font-mono whitespace-pre-wrap bg-slate-50 border border-slate-200 "
-                "rounded-lg p-3 max-h-64 overflow-auto"
+                "w-full text-xs font-mono whitespace-pre-wrap bg-stone-50 border border-stone-200 "
+                "rounded-lg p-3 max-h-64 overflow-auto text-stone-700"
             )
             with ui.row().classes("w-full justify-end gap-2"):
                 ui.button("Từ chối", on_click=lambda: dialog.submit(False)).props("flat no-caps")
                 ui.button("Cho phép", on_click=lambda: dialog.submit(True)).props(
-                    "unelevated no-caps color=warning"
+                    "unelevated no-caps color=primary"
                 )
         try:
             return bool(await dialog)
@@ -391,20 +415,34 @@ class WebApprover(ApprovalPort):
             dialog.delete()
 
 
-def _describe_tool_call(tool_call: ToolCallMessage.ToolCall) -> str:
-    """Nhãn ngắn cho một lần gọi tool, kèm tham số chính (đường dẫn / từ khóa) để người dùng theo dõi."""
+def _tool_info(tool_name: str) -> tuple[str, str]:
+    """Lấy tên hiển thị tiếng Việt và biểu tượng cho tool RAG."""
+    meta = TOOL_METADATA.get(tool_name, {"label": tool_name, "icon": "build"})
+    return meta["label"], meta["icon"]
+
+
+def _describe_tool_call(tool_call: ToolCallMessage.ToolCall) -> tuple[str, str]:
+    """Nhãn ngắn gọn và icon cho một lần gọi tool RAG để người dùng theo dõi."""
+    friendly_name, icon = _tool_info(tool_call.name)
     main_arg = next(
         (
             tool_call.kwargs[key]
-            for key in ("path", "root", "file_path", "query", "entities", "chunk_ids")
+            for key in ("query", "entities", "chunk_ids", "path", "root", "file_path")
             if tool_call.kwargs.get(key)
         ),
         None,
     )
+    if isinstance(main_arg, list):
+        main_arg = ", ".join(str(x) for x in main_arg[:3]) + ("…" if len(main_arg) > 3 else "")
+    elif main_arg is not None:
+        main_arg = str(main_arg)
+
     if tool_call.kwargs.get("query") and main_arg != tool_call.kwargs["query"]:
         main_arg = f"{main_arg} · “{tool_call.kwargs['query']}”"
-    label = f"{tool_call.name} · {main_arg}" if main_arg else tool_call.name
-    return label if len(label) <= 90 else label[:89] + "…"
+
+    label = f"{friendly_name} · {main_arg}" if main_arg else friendly_name
+    trimmed = label if len(label) <= 90 else label[:89] + "…"
+    return trimmed, icon
 
 
 def _make_title(text: str) -> str:
@@ -466,19 +504,23 @@ def run_web_ui(
 
         with ui.element("div").classes(
             "min-h-screen w-full flex items-center justify-center "
-            "bg-gradient-to-br from-indigo-50 via-white to-slate-100 p-4"
+            "bg-gradient-to-br from-emerald-50 via-stone-50 to-amber-50/40 p-4"
         ):
             with ui.column().classes("w-full max-w-md items-center gap-6"):
-                with ui.column().classes("items-center gap-2"):
+                with ui.column().classes("items-center gap-2 text-center"):
                     with ui.element("div").classes(
-                        "w-14 h-14 rounded-2xl bg-primary flex items-center justify-center shadow-lg"
+                        "w-16 h-16 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-emerald-900/10"
                     ):
-                        ui.icon("auto_awesome", size="28px").classes("text-white")
-                    ui.label(APP_NAME).classes("text-3xl font-bold text-slate-900")
-                    ui.label("Trợ lý AI có khả năng dùng công cụ").classes("text-slate-500")
+                        ui.icon("history_edu", size="34px").classes("text-white")
+                    ui.label(APP_NAME).classes("text-3xl font-extrabold text-stone-900 tracking-tight")
+                    ui.label("Trợ lý Hỏi đáp Lịch sử & Địa lý Việt Nam").classes("text-stone-600 font-medium")
+                    with ui.element("div").classes(
+                        "text-xs text-emerald-800 bg-emerald-100/70 border border-emerald-200/80 px-3 py-1 rounded-full font-medium mt-1"
+                    ):
+                        ui.label("Bộ 15 tập Lịch sử Việt Nam (Viện Sử học 2017)")
 
-                with ui.card().classes("w-full p-0 rounded-2xl shadow-xl border border-slate-100"):
-                    with ui.tabs().classes("w-full text-slate-600").props(
+                with ui.card().classes("w-full p-0 rounded-2xl shadow-xl border border-stone-200/80 bg-white"):
+                    with ui.tabs().classes("w-full text-stone-600").props(
                         "active-color=primary indicator-color=primary align=justify narrow-indicator"
                     ) as tabs:
                         login_tab = ui.tab("Đăng nhập")
@@ -494,7 +536,7 @@ def run_web_ui(
                                     "Mật khẩu", password=True, password_toggle_button=True
                                 ).props("outlined").classes("w-full").on("keydown.enter", do_login)
                                 ui.button("Đăng nhập", on_click=do_login).props(
-                                    "unelevated size=lg no-caps"
+                                    "unelevated size=lg no-caps color=primary"
                                 ).classes("w-full rounded-xl")
 
                         with ui.tab_panel(register_tab).classes("p-6"):
@@ -510,7 +552,7 @@ def run_web_ui(
                                     "Nhập lại mật khẩu", password=True
                                 ).props("outlined").classes("w-full").on("keydown.enter", do_register)
                                 ui.button("Tạo tài khoản", on_click=do_register).props(
-                                    "unelevated size=lg no-caps"
+                                    "unelevated size=lg no-caps color=primary"
                                 ).classes("w-full rounded-xl")
 
     # ------------------------------------------------------------------ #
@@ -694,27 +736,27 @@ def run_web_ui(
         @ui.refreshable
         def conversation_list() -> None:
             if not state["conversations"]:
-                ui.label("Chưa có cuộc trò chuyện nào").classes("text-sm text-slate-500 px-3 py-2")
+                ui.label("Chưa có cuộc trò chuyện nào").classes("text-sm text-stone-400 px-3 py-2")
                 return
             for conversation in state["conversations"]:
                 active = conversation.id == state["conversation_id"]
                 with ui.row().classes(
                     "conv-item group w-full items-center no-wrap gap-1 rounded-lg px-2 py-1 cursor-pointer relative "
-                    + ("active bg-slate-800 text-white" if active else "text-slate-300 hover:bg-slate-800/60")
+                    + ("active bg-emerald-900/60 text-white font-medium border border-emerald-700/40" if active else "text-stone-300 hover:bg-white/5")
                 ):
                     with ui.row().classes("conv-title-wrap items-center no-wrap gap-2 cursor-pointer py-1").on(
                         "click",
                         lambda c=conversation: guarded(lambda: (open_conversation(c.id), chat_header.refresh())),
                     ):
                         ui.icon("chat_bubble_outline", size="16px").classes(
-                            "text-slate-400 shrink-0 select-none" if active else "text-slate-500 shrink-0 select-none"
+                            "text-emerald-400 shrink-0 select-none" if active else "text-stone-400 shrink-0 select-none"
                         )
                         ui.label(conversation.title).classes(
                             "flex-1 min-w-0 truncate text-sm select-none"
                         ).tooltip(conversation.title)
 
                     with ui.button(icon="more_horiz").props("flat round dense size=sm").classes(
-                        "conv-menu shrink-0 text-slate-400 hover:text-white"
+                        "conv-menu shrink-0 text-stone-400 hover:text-white"
                     ):
                         ui.tooltip("Tùy chọn")
                         with ui.menu().props("auto-close"):
@@ -728,7 +770,7 @@ def run_web_ui(
                                     ui.label("Xóa")
 
         with ui.left_drawer(value=True, fixed=True).props("width=265 breakpoint=900").classes(
-            "bg-slate-900 p-0 relative"
+            "bg-[#1c2820] p-0 relative text-stone-200"
         ) as drawer:
             ui.element("div").classes("sidebar-resizer").props(
                 'id="sidebar-resizer" title="Kéo để thay đổi độ rộng thanh bên"'
@@ -736,42 +778,44 @@ def run_web_ui(
             with ui.column().classes("w-full h-full no-wrap gap-0"):
                 with ui.row().classes("items-center gap-3 px-4 pt-5 pb-4 no-wrap"):
                     with ui.element("div").classes(
-                        "w-9 h-9 rounded-xl bg-primary flex items-center justify-center"
+                        "w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-sm"
                     ):
-                        ui.icon("auto_awesome", size="20px").classes("text-white")
-                    ui.label(APP_NAME).classes("text-lg font-semibold text-white")
+                        ui.icon("history_edu", size="20px").classes("text-white")
+                    with ui.column().classes("gap-0"):
+                        ui.label(APP_NAME).classes("text-lg font-bold text-white tracking-wide")
+                        ui.label("Lịch sử & Địa lý VN").classes("text-[10px] text-emerald-200/80 -mt-1")
 
                 ui.button(
                     "Cuộc trò chuyện mới",
                     icon="add",
                     on_click=lambda: (open_conversation(None), chat_header.refresh()),
                 ).props("unelevated no-caps align=left").classes(
-                    "mx-3 rounded-xl bg-white/10 text-white hover:bg-white/20"
+                    "mx-3 rounded-xl bg-emerald-800/40 text-emerald-100 hover:bg-emerald-800/70 border border-emerald-700/30"
                 ).style("width: calc(100% - 1.5rem)")
 
                 ui.label("Gần đây").classes(
-                    "text-xs font-semibold uppercase tracking-wider text-slate-500 px-4 pt-5 pb-2 shrink-0"
+                    "text-xs font-semibold uppercase tracking-wider text-emerald-300/50 px-4 pt-5 pb-2 shrink-0"
                 )
                 with ui.column().classes("flex-grow w-full sidebar-scroll px-2 gap-0.5 no-wrap"):
                     conversation_list()
 
-                ui.separator().classes("bg-slate-800")
+                ui.separator().classes("bg-emerald-900/40")
                 with ui.row().classes("w-full items-center no-wrap gap-3 px-4 py-3"):
                     name = user.display_name or user.username
                     with ui.element("div").classes(
-                        "w-9 h-9 shrink-0 rounded-full bg-indigo-500 flex items-center justify-center "
-                        "text-white font-semibold"
+                        "w-9 h-9 shrink-0 rounded-full bg-secondary flex items-center justify-center "
+                        "text-amber-100 font-semibold shadow-xs"
                     ):
                         ui.label(name[:1].upper())
                     with ui.column().classes("gap-0 flex-grow min-w-0"):
                         ui.label(name).classes("text-sm font-medium text-white truncate")
-                        ui.label(f"@{user.username}").classes("text-xs text-slate-400 truncate")
+                        ui.label(f"@{user.username}").classes("text-xs text-stone-400 truncate")
                     if user.is_admin:
                         ui.button(icon="admin_panel_settings", on_click=lambda: ui.navigate.to("/admin")).props(
                             "flat round dense"
-                        ).classes("text-slate-400 shrink-0").tooltip("Quản trị")
+                        ).classes("text-stone-400 hover:text-white shrink-0").tooltip("Quản trị")
                     ui.button(icon="logout", on_click=logout).props("flat round dense").classes(
-                        "text-slate-400 shrink-0"
+                        "text-stone-400 hover:text-white shrink-0"
                     ).tooltip("Đăng xuất")
 
         # ---------------- Đồng bộ độ rộng thanh bên ----------------
@@ -786,41 +830,104 @@ def run_web_ui(
         ui.on("sidebar_resized", on_sidebar_resized)
 
         # ---------------- Khung chat ----------------
+        def render_tool_group(tool_messages: list[Message]) -> None:
+            """Gom toàn bộ các bước suy luận và gọi tool vào một khối collapse 2 tầng (Outer -> Inner per Tool)."""
+            # Thu thập kết quả theo tool_call_id
+            results_by_id: dict[str, ToolResultMessage] = {
+                msg.tool_call_id: msg
+                for msg in tool_messages
+                if isinstance(msg, ToolResultMessage)
+            }
+
+            # Lập danh sách các bước gọi tool kèm kết quả
+            steps: list[dict[str, Any]] = []
+            for msg in tool_messages:
+                if isinstance(msg, ToolCallMessage):
+                    for tc in msg.tool_calls:
+                        res = results_by_id.get(tc.id)
+                        steps.append({
+                            "call": tc,
+                            "result": res,
+                        })
+
+            call_count = len(steps)
+            label = f"Quá trình tra cứu & suy luận ({call_count} bước)" if call_count else "Quá trình tra cứu tư liệu"
+
+            with ui.row().classes("w-full pl-11 my-1"):
+                # TẦNG 1: Collapse tổng quan toàn bộ quá trình tra cứu
+                with ui.expansion(label, icon="manage_search").props(
+                    "dense header-class='text-xs font-semibold text-stone-700 select-none'"
+                ).classes(
+                    "w-full text-xs rounded-xl border border-stone-200/90 bg-stone-50/80 overflow-hidden shadow-xs hover:border-emerald-600/40 transition-colors"
+                ):
+                    with ui.column().classes("w-full p-2.5 gap-2.5 bg-white/70"):
+                        if not steps:
+                            ui.label("Không có thông tin chi tiết các bước.").classes("text-stone-400 text-xs italic")
+                            return
+
+                        for idx, step in enumerate(steps, start=1):
+                            tc = step["call"]
+                            res: ToolResultMessage | None = step["result"]
+                            friendly_name, icon = _tool_info(tc.name)
+                            label_short, _ = _describe_tool_call(tc)
+                            is_error = res.is_error if res else False
+
+                            header_text = f"Bước {idx}: {label_short}"
+                            border_color = "border-red-300 bg-red-50/40" if is_error else "border-stone-200 bg-stone-50/60 hover:bg-emerald-50/30"
+                            header_color = "text-red-700" if is_error else "text-stone-800"
+
+                            # TẦNG 2: Sub-collapse cho từng công cụ gọi và kết quả trả về
+                            with ui.expansion(header_text, icon=icon).props(
+                                f"dense header-class='text-xs font-medium {header_color} select-none'"
+                            ).classes(
+                                f"w-full text-xs rounded-lg border {border_color} overflow-hidden transition-all shadow-2xs"
+                            ):
+                                with ui.column().classes("w-full p-3 gap-2.5 bg-white"):
+                                    # Phần 1: Tham số gọi công cụ
+                                    with ui.column().classes("w-full gap-1"):
+                                        with ui.row().classes("items-center gap-1.5"):
+                                            ui.icon("input", size="14px").classes("text-stone-500")
+                                            ui.label("Tham số gọi công cụ:").classes("text-[11px] font-semibold text-stone-600 uppercase tracking-wider")
+                                        with ui.element("div").classes("w-full bg-stone-50 border border-stone-200/80 rounded-md p-2"):
+                                            for k, v in tc.kwargs.items():
+                                                with ui.row().classes("w-full no-wrap gap-2 text-xs"):
+                                                    ui.label(f"{k}:").classes("font-semibold text-stone-600 shrink-0")
+                                                    ui.label(str(v)).classes("font-mono text-stone-800 break-all")
+
+                                    # Phần 2: Kết quả trả về
+                                    with ui.column().classes("w-full gap-1 mt-1"):
+                                        with ui.row().classes("items-center gap-1.5"):
+                                            res_badge_icon = "error_outline" if is_error else "check_circle"
+                                            badge_color = "text-red-600" if is_error else "text-emerald-700"
+                                            ui.icon(res_badge_icon, size="14px").classes(badge_color)
+                                            res_label = "Thông báo lỗi:" if is_error else "Kết quả tra cứu trả về:"
+                                            ui.label(res_label).classes(f"text-[11px] font-semibold {badge_color} uppercase tracking-wider")
+
+                                        res_text = parts_to_text(res.content) if res else "Đang chờ kết quả..."
+                                        ui.label(res_text).classes(
+                                            "w-full text-xs text-stone-800 whitespace-pre-wrap font-mono "
+                                            "bg-stone-50/90 border border-stone-200 rounded-md p-2.5 "
+                                            "max-h-72 overflow-y-auto leading-relaxed shadow-inner"
+                                        )
+
         def render_message(message: Message) -> None:
             if isinstance(message, UserMessage):
                 with ui.row().classes("w-full justify-end"):
                     ui.label(parts_to_text(message.content)).classes(
                         "bg-primary text-white px-4 py-2.5 rounded-2xl rounded-br-md max-w-[80%] "
-                        "whitespace-pre-wrap shadow-sm"
+                        "whitespace-pre-wrap shadow-sm leading-relaxed"
                     )
             elif isinstance(message, AssistantMessage):
                 with ui.row().classes("w-full no-wrap gap-3 items-start"):
                     with ui.element("div").classes(
-                        "w-8 h-8 shrink-0 rounded-full bg-indigo-100 flex items-center justify-center"
+                        "w-8 h-8 shrink-0 rounded-full bg-emerald-100 border border-emerald-200 flex items-center justify-center shadow-xs"
                     ):
-                        ui.icon("auto_awesome", size="16px").classes("text-primary")
+                        ui.icon("history_edu", size="18px").classes("text-primary")
                     ui.markdown(parts_to_text(message.content)).classes(
-                        "chat-markdown text-slate-800 leading-relaxed pt-1 min-w-0 flex-grow"
+                        "chat-markdown text-stone-800 leading-relaxed pt-1 min-w-0 flex-grow"
                     )
-            elif isinstance(message, ToolCallMessage):
-                with ui.row().classes("w-full gap-2 pl-11"):
-                    for tool_call in message.tool_calls:
-                        ui.chip(_describe_tool_call(tool_call), icon="build").props(
-                            "dense outline color=grey-7"
-                        ).classes("text-xs max-w-full")
-            elif isinstance(message, ToolResultMessage):
-                title, icon, color = (
-                    (f"Lỗi {message.name}", "error_outline", "text-red-600 border-red-200 bg-red-50")
-                    if message.is_error
-                    else (f"Kết quả {message.name}", "check_circle", "text-slate-500 border-slate-200 bg-white")
-                )
-                with ui.row().classes("w-full pl-11"):
-                    with ui.expansion(title, icon=icon).props("dense header-class=text-xs").classes(
-                        f"text-xs rounded-lg border max-w-full {color}"
-                    ):
-                        ui.label(parts_to_text(message.content)).classes(
-                            "text-xs text-slate-600 whitespace-pre-wrap font-mono"
-                        )
+            elif isinstance(message, (ToolCallMessage, ToolResultMessage)):
+                render_tool_group([message])
 
         def fill_suggestion(text: str) -> None:
             message_input.value = text
@@ -829,40 +936,69 @@ def run_web_ui(
         @ui.refreshable
         def chat_view() -> None:
             if not state["messages"] and not state["pending_text"]:
-                with ui.column().classes("w-full items-center text-center gap-3 pt-24"):
+                with ui.column().classes("w-full items-center text-center gap-3 pt-16 pb-8 max-w-2xl mx-auto"):
                     with ui.element("div").classes(
-                        "w-14 h-14 rounded-2xl bg-indigo-100 flex items-center justify-center"
+                        "w-16 h-16 rounded-2xl bg-emerald-100 border border-emerald-200 flex items-center justify-center shadow-sm"
                     ):
-                        ui.icon("auto_awesome", size="28px").classes("text-primary")
+                        ui.icon("history_edu", size="34px").classes("text-primary")
                     ui.label(f"Xin chào, {user.display_name or user.username}!").classes(
-                        "text-2xl font-semibold text-slate-900"
+                        "text-2xl font-bold text-stone-800"
                     )
-                    ui.label("Hôm nay tôi có thể giúp gì cho bạn?").classes("text-slate-500")
-                    with ui.row().classes("gap-2 justify-center mt-4"):
+                    ui.label(
+                        "Chào mừng bạn đến với VNHisChat — Trợ lý AI chuyên sâu về Lịch sử và Địa lý Việt Nam. "
+                        "Mọi câu hỏi đều được tra cứu đối chiếu và trích dẫn kiểm chứng từ Bộ 15 tập Lịch sử Việt Nam."
+                    ).classes("text-stone-600 text-sm leading-relaxed max-w-lg")
+                    ui.label("Gợi ý câu hỏi tiêu biểu:").classes("text-xs font-semibold uppercase tracking-wider text-stone-400 mt-4")
+                    with ui.column().classes("w-full gap-2 items-center mt-1"):
                         for suggestion in SUGGESTIONS:
-                            ui.button(suggestion, on_click=lambda s=suggestion: fill_suggestion(s)).props(
-                                "outline no-caps rounded"
-                            ).classes("text-slate-600 text-sm normal-case bg-white")
+                            with ui.button(
+                                on_click=lambda s=suggestion: fill_suggestion(s)
+                            ).props("outline no-caps").classes(
+                                "text-stone-700 text-sm normal-case bg-white border-stone-200 hover:border-emerald-600 hover:text-emerald-800 rounded-xl px-4 py-2.5 text-left w-full max-w-xl transition-all shadow-xs"
+                            ):
+                                with ui.row().classes("items-center gap-2.5 no-wrap w-full"):
+                                    ui.icon("auto_stories", size="16px").classes("text-primary shrink-0")
+                                    ui.label(suggestion).classes("flex-1 text-sm font-normal")
                 return
 
+            # Nhóm các message: gom các tool call/result liên tiếp trước câu trả lời thành 1 khối collapse duy nhất
+            grouped: list[tuple[str, Any]] = []
+            current_tools: list[Message] = []
+
+            for msg in state["messages"]:
+                if isinstance(msg, (ToolCallMessage, ToolResultMessage)):
+                    current_tools.append(msg)
+                else:
+                    if current_tools:
+                        grouped.append(("tools", current_tools))
+                        current_tools = []
+                    grouped.append(("single", msg))
+
+            if current_tools:
+                grouped.append(("tools", current_tools))
+
             with ui.column().classes("w-full gap-5"):
-                for message in state["messages"]:
-                    render_message(message)
+                for item_type, item_data in grouped:
+                    if item_type == "tools":
+                        render_tool_group(item_data)
+                    else:
+                        render_message(item_data)
+
                 if state["pending_text"]:
                     # Tin nhắn vừa gửi, hiển thị ngay trong lúc chờ Agent trả lời
                     render_message(UserMessage(content=[TextPart(text=state["pending_text"])]))
                     with ui.row().classes("w-full no-wrap gap-3 items-center"):
                         with ui.element("div").classes(
-                            "w-8 h-8 shrink-0 rounded-full bg-indigo-100 flex items-center justify-center"
+                            "w-8 h-8 shrink-0 rounded-full bg-emerald-100 border border-emerald-200 flex items-center justify-center"
                         ):
-                            ui.icon("auto_awesome", size="16px").classes("text-primary")
+                            ui.icon("history_edu", size="18px").classes("text-primary")
                         with ui.element("div").classes("typing flex gap-1"):
                             for _ in range(3):
                                 ui.element("span")
 
         @ui.refreshable
         def chat_header() -> None:
-            ui.label(current_title()).classes("text-sm font-medium text-slate-700 truncate")
+            ui.label(current_title()).classes("text-sm font-semibold text-stone-700 truncate")
 
         def scroll_to_bottom() -> None:
             message_scroll.scroll_to(percent=1.0, duration=0.2)
@@ -916,10 +1052,10 @@ def run_web_ui(
         # ---------------- Bố cục vùng chính ----------------
         with ui.column().classes("w-full h-screen no-wrap gap-0"):
             with ui.row().classes(
-                "w-full items-center no-wrap gap-2 px-4 h-14 border-b border-slate-200 bg-white/80 backdrop-blur"
+                "w-full items-center no-wrap gap-2 px-4 h-14 border-b border-stone-200 bg-white/90 backdrop-blur"
             ):
                 ui.button(icon="menu", on_click=drawer.toggle).props("flat round dense").classes(
-                    "text-slate-600"
+                    "text-stone-600"
                 )
                 chat_header()
 
@@ -929,9 +1065,9 @@ def run_web_ui(
 
             with ui.column().classes("w-full px-4 pb-4 pt-2"):
                 with ui.card().classes(
-                    "w-full max-w-3xl mx-auto p-2 rounded-2xl shadow-md border border-slate-200 gap-1"
+                    "w-full max-w-3xl mx-auto p-2 rounded-2xl shadow-md border border-stone-200 gap-1 bg-white"
                 ):
-                    message_input = ui.textarea(placeholder="Nhắn tin cho trợ lý…").props(
+                    message_input = ui.textarea(placeholder="Hỏi về sự kiện, nhân vật, trận đánh hoặc địa lý lịch sử Việt Nam…").props(
                         "autogrow borderless dense input-class=px-2 input-style='max-height:200px'"
                     ).classes("w-full text-base")
                     with ui.row().classes("w-full items-center no-wrap gap-2 px-1"):
@@ -951,11 +1087,12 @@ def run_web_ui(
                         ).classes("w-48 text-sm")
                         ui.space()
                         send_button = ui.button(icon="arrow_upward", on_click=send).props(
-                            "unelevated round dense"
+                            "unelevated round dense color=primary"
                         ).classes("shrink-0")
-                ui.label("Trợ lý AI có thể mắc lỗi. Hãy kiểm tra lại thông tin quan trọng.").classes(
-                    "w-full text-center text-xs text-slate-400 mt-2"
-                )
+                ui.label(
+                    "Dữ liệu được tra cứu và đối chiếu từ Bộ 15 tập Lịch sử Việt Nam (Viện Sử học 2017). "
+                    "Vui lòng đối chiếu mã nguồn trích dẫn [Nguồn: tap_XX_trang_YYYY] để kiểm chứng."
+                ).classes("w-full text-center text-xs text-stone-400 mt-2")
 
         message_input.on("keydown.enter.exact.prevent", send)
 
@@ -1003,9 +1140,9 @@ def run_web_ui(
         else:
             scroll_to_bottom()
 
-    ui_run_kwargs.setdefault("title", APP_NAME)
+    ui_run_kwargs.setdefault("title", f"{APP_NAME} — Hỏi Đáp Lịch Sử & Địa Lý Việt Nam")
     ui_run_kwargs.setdefault("reload", False)
-    ui_run_kwargs.setdefault("favicon", "✨")
+    ui_run_kwargs.setdefault("favicon", "🎋")
     register_admin_pages(usecases=usecases, providers=providers, apply_theme=_apply_theme)
 
     ui.run(storage_secret=storage_secret, **ui_run_kwargs)

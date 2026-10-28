@@ -2,9 +2,11 @@
 
 Hệ thống trợ lý hỏi đáp chuyên sâu về Lịch sử và Địa lý Việt Nam, kết hợp cơ sở dữ liệu vector và đồ thị tri thức để cung cấp câu trả lời có trích dẫn nguồn trang sách giúp người dùng tiện đối chiếu, kiểm chứng.
 
-Hệ thống được tổ chức theo mô hình Clean Architecture (Ports & Adapters), phân định rõ ràng giữa logic nghiệp vụ và các thư viện hạ tầng bên ngoài.
 
----
+<div align="center">
+  <img src="docs/assets/demo-hybrid-graph-rag-execution.png" alt="Truy vấn kết hợp Vector và Đồ thị tri thức" width="900"/>
+  <p><i>Hệ thống tra cứu kết hợp Vector và Đồ thị có dẫn nguồn</i></p>
+</div>
 
 ## 1. Kiến trúc hệ thống
 

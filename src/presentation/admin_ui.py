@@ -135,7 +135,7 @@ def _admin_shell(active_key: str, user: User) -> Iterator[ui.column]:
                 if section.available:
                     active = section.key == active_key
                     item_classes = "rounded-lg " + (
-                        "bg-indigo-50 text-indigo-700 font-medium" if active else "text-slate-700 hover:bg-slate-100"
+                        "bg-emerald-50 text-emerald-800 font-semibold border border-emerald-200/80" if active else "text-stone-700 hover:bg-stone-100"
                     )
                     with ui.item(on_click=lambda s=section: ui.navigate.to(s.path)).classes(item_classes):
                         with ui.item_section().props("avatar"):
@@ -150,10 +150,10 @@ def _admin_shell(active_key: str, user: User) -> Iterator[ui.column]:
                             ui.item_label(section.title)
                             ui.item_label("Sắp có").props("caption")
 
-    with ui.header(elevated=False).classes("bg-white text-slate-800 border-b border-slate-200 items-center gap-2"):
-        ui.button(icon="menu", on_click=drawer.toggle).props("flat round dense").classes("text-slate-600")
-        ui.icon("auto_awesome").classes("text-primary")
-        ui.label("Agent · Quản trị dữ liệu").classes("font-semibold")
+    with ui.header(elevated=False).classes("bg-white text-stone-800 border-b border-stone-200 items-center gap-2"):
+        ui.button(icon="menu", on_click=drawer.toggle).props("flat round dense").classes("text-stone-600")
+        ui.icon("history_edu").classes("text-primary")
+        ui.label("VNHisChat · Quản trị hệ thống").classes("font-semibold text-stone-900")
         ui.space()
         ui.label(user.display_name or user.username).classes("text-sm text-slate-500 hidden sm:block")
         ui.button("Về trang chat", icon="chat", on_click=lambda: ui.navigate.to("/")).props("flat no-caps")
