@@ -1,8 +1,4 @@
-"""Presentation Admin UI - Trang Quản trị dữ liệu (chỉ quản trị viên).
-
-Bố cục: thanh điều hướng bên trái (danh sách ADMIN_SECTIONS) + vùng nội dung.
-Mỗi mục là một nhóm trang riêng; thêm mục mới chỉ cần thêm một dòng vào ADMIN_SECTIONS và các route của nó.
-"""
+"""Giao diện quản trị hệ thống và cấu hình mô hình."""
 
 from contextlib import contextmanager
 from dataclasses import dataclass

@@ -1,5 +1,4 @@
-"""Infrastructure Config - Quản lý cấu hình môi trường và các đường dẫn hệ thống.
-"""
+"""Quản lý cấu hình môi trường và các tham số hệ thống."""
 
 import os
 from dataclasses import dataclass, field

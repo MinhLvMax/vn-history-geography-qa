@@ -1,5 +1,4 @@
-"""Infrastructure Logger Service - Hiện thực dịch vụ ghi log sử dụng thư viện logging chuẩn của Python.
-"""
+"""Dịch vụ ghi nhật ký sử dụng thư viện logging chuẩn của Python."""
 
 import logging
 from logging.handlers import RotatingFileHandler

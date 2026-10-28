@@ -1,5 +1,4 @@
-"""Use Case Xóa hội thoại - Xóa hội thoại (kèm toàn bộ tin nhắn) của người dùng đang đăng nhập.
-"""
+"""Xóa cuộc trò chuyện và lịch sử tin nhắn."""
 
 from src.application.repositories import ConversationRepository, SessionRepository
 from src.application.usecases.common import authenticate, get_owned_conversation

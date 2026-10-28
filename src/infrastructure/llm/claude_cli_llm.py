@@ -1,10 +1,4 @@
-"""Infrastructure LLM - Adapter gọi Claude qua Claude Code CLI (subprocess), không dùng API key.
-
-Claude CLI không cho phép khai báo function-calling tùy ý như Groq/OpenAI, nên adapter
-mô phỏng tool calling bằng structured output (`--json-schema`): LLM luôn trả về một JSON
-có dạng {"type": "message" | "tool_calls", ...} và adapter chuyển nó thành Decision.
-Các tool built-in của Claude Code bị tắt (`--tools ""`) để agent chỉ dùng tool của hệ thống.
-"""
+"""Adapter gọi mô hình qua Claude Code CLI."""
 
 import json
 import shutil

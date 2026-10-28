@@ -1,5 +1,4 @@
-"""Application Use Cases - Mỗi file là một nghiệp vụ mà giao diện có thể gọi.
-"""
+"""Các nghiệp vụ ứng dụng (Use Cases)."""
 
 from src.application.usecases.create_conversation import CreateConversationUseCase
 from src.application.usecases.delete_conversation import DeleteConversationUseCase

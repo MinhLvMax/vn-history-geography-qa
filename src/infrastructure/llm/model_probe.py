@@ -1,7 +1,4 @@
-"""Infrastructure LLM - Kiểm tra model bằng cách gọi thật qua đúng adapter của hệ thống.
-
-Dùng lại `build_llm` của Bootstrap để việc test đi đúng đường đang dùng khi chat thật.
-"""
+"""Kiểm tra hoạt động thực tế của mô hình qua adapter."""
 
 import time
 from concurrent.futures import ThreadPoolExecutor

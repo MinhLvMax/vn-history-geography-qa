@@ -1,5 +1,4 @@
-"""Infrastructure RAG Cross-Encoder Reranker - Chấm điểm và xếp hạng lại kết quả bằng PhoRanker / CrossEncoder.
-"""
+"""Bộ xếp hạng lại kết quả truy xuất sử dụng Cross-Encoder (PhoRanker)."""
 
 from __future__ import annotations
 

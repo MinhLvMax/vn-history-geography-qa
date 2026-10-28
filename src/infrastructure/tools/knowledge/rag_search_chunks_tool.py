@@ -1,5 +1,4 @@
-"""Infrastructure Tools - Công cụ tìm kiếm ngữ nghĩa các đoạn tư liệu qua Vector RAG Pipeline.
-"""
+"""Công cụ tìm kiếm ngữ nghĩa văn bản qua Vector RAG Pipeline."""
 
 from dataclasses import dataclass
 from typing import Any

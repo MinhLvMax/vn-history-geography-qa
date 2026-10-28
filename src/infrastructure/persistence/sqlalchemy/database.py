@@ -1,5 +1,4 @@
-"""SQLAlchemy Database - Khởi tạo engine, tạo bảng và trả về session factory.
-"""
+"""Khởi tạo engine, tạo bảng và quản lý phiên làm việc SQLAlchemy."""
 
 from sqlalchemy import create_engine, event
 from sqlalchemy.engine import Engine

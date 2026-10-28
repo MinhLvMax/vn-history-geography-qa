@@ -1,8 +1,4 @@
-"""Infrastructure RAG Neo4j Graph Retriever - Truy xuất thực thể và quan hệ từ Neo4j.
-
-Sử dụng thư viện `neo4j` Python Driver chính thức.
-Không phụ thuộc cứng vào danh sách nhãn (Labels) hay loại quan hệ (Relationship Types) của CSDL.
-"""
+"""Truy xuất thực thể và quan hệ từ đồ thị tri thức Neo4j."""
 
 from __future__ import annotations
 

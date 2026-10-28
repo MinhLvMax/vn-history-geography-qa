@@ -1,5 +1,4 @@
-"""Infrastructure RAG Embedder - Mã hóa văn bản sang vector bằng HuggingFace SentenceTransformer.
-"""
+"""Mã hóa văn bản thành vector bằng HuggingFace SentenceTransformer."""
 
 from __future__ import annotations
 

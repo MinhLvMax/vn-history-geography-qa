@@ -1,8 +1,4 @@
-"""Presentation Web UI - Giao diện chat web bằng NiceGUI.
-
-Gồm trang đăng nhập / đăng ký và trang chat (sidebar hội thoại + khung chat).
-Mọi thao tác nghiệp vụ đều đi qua các use case được Bootstrap tiêm vào.
-"""
+"""Giao diện web VNHisChat xây dựng bằng NiceGUI."""
 
 import asyncio
 import concurrent.futures

@@ -1,17 +1,4 @@
-"""Application Context Strategy - Chiến lược quản lý bối cảnh hội thoại (Context Engineering).
-
-Triển khai kiến trúc chuẩn công nghiệp (tương tự Claude Code / Anthropic Agent / SWE-agent):
-1. Chia lịch sử thành các lượt hoàn chỉnh (Turn), mỗi Turn bắt đầu bằng một `UserMessage`
-   (đảm bảo không bao giờ cắt rời giữa `ToolCallMessage` và `ToolResultMessage`).
-2. Observation Masking (Tổng quát, không phụ thuộc định dạng riêng của bất kỳ Tool nào):
-   - Giữ nguyên văn 100% `ToolResultMessage` cho `keep_raw_tool_turns` lượt gần nhất
-     để trả lời mượt các câu hỏi nối tiếp trực tiếp (follow-up).
-   - Với các lượt cũ hơn, giữ nguyên `UserMessage`, `AssistantMessage` và `ToolCallMessage`,
-     đồng thời tự động tóm tắt nội dung dài của `ToolResultMessage` dựa trên ngữ cảnh lệnh gọi
-     (`ToolCall`) và cấu trúc văn bản của kết quả.
-3. Sliding Window + Character Budget:
-   - Chỉ giữ tối đa `max_turns` lượt gần nhất và tự động thu gọn thêm nếu vượt ngân sách ký tự.
-"""
+"""Chiến lược quản lý và nén cửa sổ ngữ cảnh hội thoại."""
 
 from __future__ import annotations
 

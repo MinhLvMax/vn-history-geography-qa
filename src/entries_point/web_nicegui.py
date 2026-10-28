@@ -1,7 +1,4 @@
-"""Entrypoint - Chạy VNHisChat dưới dạng giao diện web NiceGUI.
-
-Chạy: python -m src.entries_point.web_nicegui rồi mở http://localhost:8080
-"""
+"""Khởi chạy giao diện web VNHisChat."""
 
 import sys
 from pathlib import Path

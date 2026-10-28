@@ -1,5 +1,4 @@
-"""Application Security - Cổng (Port) băm và kiểm tra mật khẩu.
-"""
+"""Giao diện băm và kiểm tra mật khẩu."""
 
 from typing import Protocol, runtime_checkable
 

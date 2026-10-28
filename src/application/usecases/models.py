@@ -1,7 +1,4 @@
-"""Use Case Quản trị model - Thêm / sửa / xóa danh mục model, và kiểm tra model bằng nút Test.
-
-Mọi use case ở đây chỉ dành cho quản trị viên.
-"""
+"""Quản lý danh mục mô hình và kiểm tra kết nối API."""
 
 from dataclasses import replace
 from typing import Any

@@ -1,5 +1,4 @@
-"""Application Tool Service - Quản lý và thực thi các công cụ (tools) cho agent.
-"""
+"""Dịch vụ quản lý và thực thi công cụ."""
 
 from typing import Any
 

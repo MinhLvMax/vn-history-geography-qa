@@ -1,5 +1,4 @@
-"""Domain Exceptions - Định nghĩa các lỗi nghiệp vụ trong hệ thống agent.
-"""
+"""Định nghĩa các ngoại lệ nghiệp vụ."""
 
 
 class AppError(Exception):

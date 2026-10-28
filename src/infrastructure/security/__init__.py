@@ -1,1 +1,1 @@
-"""Infrastructure Security - Các adapter bảo mật (băm mật khẩu...)."""
+"""Adapter bảo mật và mã hóa."""

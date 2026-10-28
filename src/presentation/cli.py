@@ -1,5 +1,4 @@
-"""Presentation CLI - Giao diện dòng lệnh tương tác với Agent.
-"""
+"""Giao diện dòng lệnh tương tác với Agent."""
 
 from typing import Callable
 

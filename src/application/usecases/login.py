@@ -1,5 +1,4 @@
-"""Use Case Đăng nhập - Kiểm tra username/mật khẩu và cấp phiên đăng nhập.
-"""
+"""Xác thực thông tin đăng nhập và tạo phiên làm việc."""
 
 import secrets
 from datetime import timedelta

@@ -1,12 +1,4 @@
-"""Infrastructure LLM - Adapter kết nối với OpenAI qua Responses API.
-
-Dùng Responses API (thay vì Chat Completions) vì chỉ API này hỗ trợ các tool built-in
-như `web_search`, `code_interpreter` do OpenAI tự thực thi phía server.
-
-Lưu ý: adapter chạy không trạng thái (`store=False`), lịch sử do hệ thống tự quản lý.
-Các "reasoning item" của model suy luận không được lưu lại giữa các lượt nên với chuỗi
-tool call dài có thể kém tối ưu hơn một chút, nhưng vẫn hoạt động đúng.
-"""
+"""Adapter kết nối dịch vụ OpenAI API."""
 
 import json
 from typing import Any

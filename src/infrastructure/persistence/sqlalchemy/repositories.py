@@ -1,7 +1,4 @@
-"""SQLAlchemy Repositories - Adapter triển khai các port lưu trữ của tầng Application.
-
-Chỉ dùng API chung của SQLAlchemy nên chạy được trên mọi CSDL mà SQLAlchemy hỗ trợ.
-"""
+"""Cài đặt các kho lưu trữ dữ liệu bằng SQLAlchemy."""
 
 from datetime import datetime, timezone
 

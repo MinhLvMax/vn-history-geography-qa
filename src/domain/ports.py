@@ -1,5 +1,4 @@
-"""Domain Ports - Định nghĩa các hợp đồng giao tiếp (Protocols) của tầng Domain.
-"""
+"""Giao diện trừu tượng (Ports) cho Tool, LLM và Logger."""
 
 from typing import Any, Protocol, runtime_checkable
 from pydantic import BaseModel

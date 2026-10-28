@@ -1,10 +1,4 @@
-"""Infrastructure LLM - Adapter kết nối với Ollama (chạy local hoặc Ollama Cloud/Server).
-
-Sử dụng trực tiếp REST API `/api/chat` của Ollama qua `httpx` để hỗ trợ đầy đủ:
-- Function / Tool calling chuẩn của Ollama (`tools`, `tool_calls`, `role="tool"`).
-- Chế độ suy luận (`think`: `True`/`False` hoặc mức độ `"low"`, `"medium"`, `"high"`).
-- Tùy chọn xác thực Bearer token (`api_key`) khi kết nối tới Ollama Cloud hoặc reverse proxy.
-"""
+"""Adapter kết nối dịch vụ Ollama API."""
 
 import json
 import uuid

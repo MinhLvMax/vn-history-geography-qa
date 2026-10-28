@@ -1,5 +1,4 @@
-"""Use Case Lấy tin nhắn hội thoại - Toàn bộ tin nhắn của một hội thoại theo thứ tự.
-"""
+"""Truy xuất danh sách tin nhắn của cuộc trò chuyện."""
 
 from src.application.repositories import (
     ConversationRepository,

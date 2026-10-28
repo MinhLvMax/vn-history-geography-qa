@@ -1,5 +1,4 @@
-"""Use Case Lấy người dùng hiện tại - Từ token đăng nhập trả về thông tin người dùng.
-"""
+"""Xác thực token và lấy thông tin người dùng hiện tại."""
 
 from src.application.repositories import SessionRepository, UserRepository
 from src.application.usecases.common import authenticate

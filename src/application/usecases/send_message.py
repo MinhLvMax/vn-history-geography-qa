@@ -1,5 +1,4 @@
-"""Use Case Gửi tin nhắn - Gửi tin nhắn vào hội thoại, chạy Agent và lưu toàn bộ lượt trao đổi.
-"""
+"""Tiếp nhận tin nhắn, điều phối Agent suy luận và lưu kết quả."""
 
 from dataclasses import dataclass, replace
 

@@ -1,9 +1,4 @@
-"""Application Approval - Cổng (Port) xin xác nhận của người dùng cho các thao tác nhạy cảm.
-
-AgentService gắn "người xác nhận" của phiên hiện tại vào phạm vi chạy tool (contextvar);
-tool / PathPolicy gọi request_approval() khi cần (vd. ghi ra ngoài workspace).
-Quyết định không đi qua tham số tool nên LLM không thể tự bỏ qua bước xác nhận.
-"""
+"""Cổng xác thực yêu cầu người dùng cho các thao tác nhạy cảm."""
 
 from contextlib import contextmanager
 from contextvars import ContextVar

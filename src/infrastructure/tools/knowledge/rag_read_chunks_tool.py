@@ -1,5 +1,4 @@
-"""Infrastructure Tools - Công cụ đọc trực tiếp các đoạn tư liệu theo mã trang/chunk_id.
-"""
+"""Công cụ đọc chi tiết các đoạn tư liệu theo mã định danh (chunk_id)."""
 
 from dataclasses import dataclass
 from typing import Any

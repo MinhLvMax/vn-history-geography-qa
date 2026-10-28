@@ -1,5 +1,4 @@
-"""Use Case Trạng thái giao diện - Đọc / lưu hội thoại, provider, model, suy luận, tool built-in của người dùng.
-"""
+"""Lưu trữ và khôi phục trạng thái lựa chọn trên giao diện."""
 
 from typing import Any
 

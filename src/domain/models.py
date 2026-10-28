@@ -1,5 +1,4 @@
-"""Domain Models - Định nghĩa các entities và value objects của hệ thống Agent.
-"""
+"""Mô hình dữ liệu và thông điệp ngữ cảnh hội thoại."""
 
 from __future__ import annotations
 

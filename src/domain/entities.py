@@ -1,7 +1,4 @@
-"""Domain Entities - Các thực thể được lưu trữ lâu dài: người dùng, hội thoại, tin nhắn.
-
-Đây là hợp đồng dữ liệu thuần, không phụ thuộc vào bất kỳ công nghệ lưu trữ nào.
-"""
+"""Thực thể nghiệp vụ lõi của hệ thống."""
 
 import uuid
 from dataclasses import dataclass, field

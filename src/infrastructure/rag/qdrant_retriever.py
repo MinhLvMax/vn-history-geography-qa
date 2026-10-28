@@ -1,5 +1,4 @@
-"""Infrastructure RAG Qdrant Retriever - Truy xuất vector hoặc lấy chunk theo ID từ Qdrant.
-"""
+"""Truy xuất vector và đọc đoạn tư liệu từ Qdrant."""
 
 from __future__ import annotations
 

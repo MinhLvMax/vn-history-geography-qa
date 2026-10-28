@@ -1,5 +1,4 @@
-"""Use Case Đổi tên hội thoại.
-"""
+"""Đổi tên tiêu đề cuộc trò chuyện."""
 
 from dataclasses import replace
 

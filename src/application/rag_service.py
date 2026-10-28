@@ -1,11 +1,4 @@
-"""Application RAG Service - Các cổng (Ports) và dịch vụ điều phối truy xuất tri thức (Vector RAG & GraphRAG).
-
-Bao gồm:
-1. EmbedderPort: Chuyển câu truy vấn thành vector (Bi-Encoder).
-2. VectorRetrieverPort: Truy xuất nhanh Top-K đoạn văn bản ứng viên từ Vector DB (Qdrant) hoặc lấy theo chunk_ids.
-3. RerankerPort: Chấm điểm sâu cặp (query, chunk) bằng Cross-Encoder (PhoRanker) và lọc lấy Top-N.
-4. KnowledgeGraphRetrieverPort: Truy xuất mạng lưới thực thể và mối quan hệ từ CSDL Đồ thị (Neo4j).
-"""
+"""Dịch vụ điều phối truy xuất tri thức lai (Vector & Knowledge Graph)."""
 
 from dataclasses import dataclass, field
 from typing import Any, Protocol, runtime_checkable

@@ -1,5 +1,4 @@
-"""Infrastructure LLM - Adapter kết nối với dịch vụ Groq Cloud API.
-"""
+"""Adapter kết nối dịch vụ Groq Cloud API."""
 
 import json
 from typing import Any

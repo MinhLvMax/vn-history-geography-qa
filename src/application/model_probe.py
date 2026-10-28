@@ -1,5 +1,4 @@
-"""Application Model Probe - Cổng kiểm tra một model có chạy được với một chế độ suy luận hay không.
-"""
+"""Kiểm tra khả năng tương thích của mô hình với chế độ suy luận."""
 
 from dataclasses import dataclass
 from typing import Protocol, runtime_checkable

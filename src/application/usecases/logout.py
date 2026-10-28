@@ -1,5 +1,4 @@
-"""Use Case Đăng xuất - Hủy phiên đăng nhập.
-"""
+"""Hủy phiên đăng nhập của người dùng."""
 
 from src.application.repositories import SessionRepository
 

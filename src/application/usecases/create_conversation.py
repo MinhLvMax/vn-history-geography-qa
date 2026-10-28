@@ -1,5 +1,4 @@
-"""Use Case Thêm hội thoại - Tạo hội thoại mới cho người dùng đang đăng nhập.
-"""
+"""Tạo cuộc trò chuyện mới."""
 
 from src.application.repositories import ConversationRepository, SessionRepository
 from src.application.usecases.common import authenticate, normalize_title

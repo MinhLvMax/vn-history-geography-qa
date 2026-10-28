@@ -1,7 +1,4 @@
-"""Presentation Model Catalog - Kiểu dữ liệu và tiện ích đọc danh mục model để render UI.
-
-Danh mục được dựng từ bảng `models` trong CSDL (chỉ model đang bật) ở Bootstrap.
-"""
+"""Mô hình dữ liệu và tiện ích quản lý danh mục mô hình cho UI."""
 
 from typing import TypedDict
 

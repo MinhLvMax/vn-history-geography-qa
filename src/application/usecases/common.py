@@ -1,5 +1,4 @@
-"""Use Case Common - Các bước kiểm tra dùng chung giữa các use case.
-"""
+"""Kiểm tra quyền và dữ liệu dùng chung giữa các use case."""
 
 from src.application.repositories import ConversationRepository, SessionRepository
 from src.domain.entities import AuthSession, Conversation, User

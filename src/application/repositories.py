@@ -1,8 +1,4 @@
-"""Application Repositories - Các cổng (Port) lưu trữ người dùng, hội thoại và tin nhắn.
-
-Tầng Application chỉ biết các hợp đồng này; việc lưu vào SQLite / PostgreSQL / ...
-do các adapter ở tầng Infrastructure đảm nhiệm.
-"""
+"""Giao diện kho lưu trữ dữ liệu (Repositories)."""
 
 from typing import Protocol, runtime_checkable
 

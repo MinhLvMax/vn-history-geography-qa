@@ -1,5 +1,4 @@
-"""Use Case Đảm bảo có tài khoản admin - Chạy khi khởi động app, tạo admin từ cấu hình nếu chưa có.
-"""
+"""Khởi tạo tài khoản quản trị viên mặc định nếu chưa tồn tại."""
 
 from src.application.repositories import UserRepository
 from src.application.security import PasswordHasher

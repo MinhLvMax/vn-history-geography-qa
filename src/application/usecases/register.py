@@ -1,5 +1,4 @@
-"""Use Case Đăng ký - Tạo tài khoản người dùng mới với mật khẩu đã băm.
-"""
+"""Đăng ký tài khoản người dùng mới."""
 
 from src.application.repositories import UserRepository
 from src.application.security import PasswordHasher

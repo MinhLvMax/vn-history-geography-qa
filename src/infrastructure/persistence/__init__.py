@@ -1,1 +1,1 @@
-"""Infrastructure Persistence - Các adapter lưu trữ dữ liệu."""
+"""Adapter lưu trữ dữ liệu."""

@@ -1,7 +1,4 @@
-"""Infrastructure Tools - Công cụ truy vấn mạng lưới thực thể và mối quan hệ từ Đồ thị Tri thức (GraphRAG).
-
-Không giả định trước CSDL đồ thị có nhãn (label) hay loại quan hệ (relation_type) cụ thể nào.
-"""
+"""Công cụ truy vấn đồ thị tri thức và bằng chứng lịch sử (GraphRAG)."""
 
 from dataclasses import dataclass
 import json

@@ -1,7 +1,4 @@
-"""Scrypt Password Hasher - Băm mật khẩu bằng hashlib.scrypt (thư viện chuẩn, không cần cài thêm).
-
-Định dạng lưu: scrypt$<n>$<r>$<p>$<salt_b64>$<hash_b64>
-"""
+"""Băm và xác thực mật khẩu sử dụng hashlib.scrypt."""
 
 import base64
 import hashlib

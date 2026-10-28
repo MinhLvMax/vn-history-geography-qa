@@ -1,5 +1,4 @@
-"""Application Agent Service - Điều phối vòng lặp suy luận và hành động (ReAct Loop).
-"""
+"""Dịch vụ điều phối vòng lặp suy luận ReAct của Agent."""
 
 from typing import Callable
 

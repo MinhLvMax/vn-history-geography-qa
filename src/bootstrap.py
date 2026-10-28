@@ -1,10 +1,4 @@
-"""Bootstrap - Composition Root khởi tạo các thành phần và tiêm phụ thuộc (Dependency Injection).
-
-File này nằm ngoài 4 tầng (Domain, Application, Infrastructure, Presentation) vì nó là
-nơi duy nhất nắm giữ chi tiết của tất cả các tầng để thực hiện việc "nối dây" (wiring)
-các dependency trước khi bàn giao quyền điều khiển cho tầng Presentation hoặc Application.
-Các file trong `entries_point/` chỉ gọi các hàm `run_*` ở đây để chạy dự án.
-"""
+"""Composition Root khởi tạo và liên kết các thành phần hệ thống."""
 
 import os
 import secrets

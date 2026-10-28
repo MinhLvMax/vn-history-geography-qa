@@ -1,5 +1,4 @@
-"""Message Codec - Chuyển đổi domain Message ⇄ (kind, payload JSON) để lưu vào CSDL.
-"""
+"""Chuyển đổi giữa domain Message và bản ghi CSDL."""
 
 import base64
 from typing import Any

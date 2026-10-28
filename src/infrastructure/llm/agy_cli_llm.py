@@ -1,10 +1,4 @@
-"""Infrastructure LLM - Adapter gọi model qua Antigravity CLI (`agy`), không dùng API key.
-
-Antigravity CLI hỗ trợ ép định dạng phản hồi bằng `--json-schema` ở chế độ non-interactive
-(khi truyền prompt qua `stdin` với `--output-format json`). Adapter mô phỏng tool calling
-bằng cách yêu cầu LLM trả về một JSON có dạng {"type": "message" | "tool_calls", ...}
-và chuyển đổi kết quả đó thành Decision của domain.
-"""
+"""Adapter gọi mô hình qua Antigravity CLI."""
 
 import json
 import shutil

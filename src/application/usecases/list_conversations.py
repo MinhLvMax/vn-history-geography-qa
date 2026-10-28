@@ -1,5 +1,4 @@
-"""Use Case Danh sách hội thoại - Các hội thoại của người dùng đang đăng nhập.
-"""
+"""Liệt kê danh sách cuộc trò chuyện của người dùng."""
 
 from src.application.repositories import ConversationRepository, SessionRepository
 from src.application.usecases.common import authenticate

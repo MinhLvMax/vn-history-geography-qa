@@ -1,7 +1,4 @@
-"""SQLAlchemy ORM Models - Định nghĩa các bảng users, conversations, messages.
-
-Chỉ dùng kiểu dữ liệu chung của SQLAlchemy để có thể chạy trên nhiều loại CSDL.
-"""
+"""Định nghĩa các bảng ORM (users, conversations, messages, models)."""
 
 from datetime import datetime
 from typing import Any
