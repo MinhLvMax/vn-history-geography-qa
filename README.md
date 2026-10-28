@@ -1,6 +1,17 @@
-# VN History & Geography QA — Agentic Hybrid RAG System
+# 🎋 VNHisChat — Agentic Hybrid Graph-RAG System
 
-Hệ thống trợ lý hỏi đáp chuyên sâu về Lịch sử và Địa lý Việt Nam, kết hợp cơ sở dữ liệu vector và đồ thị tri thức để cung cấp câu trả lời có trích dẫn nguồn trang sách giúp người dùng tiện đối chiếu, kiểm chứng.
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.12+-2d6a4f.svg?style=flat-square&logo=python&logoColor=white" alt="Python 3.12+">
+  <img src="https://img.shields.io/badge/Architecture-Clean%20Architecture-6c4a35.svg?style=flat-square" alt="Clean Architecture">
+  <img src="https://img.shields.io/badge/Graph%20DB-Neo4j%205.x-008CC1.svg?style=flat-square&logo=neo4j&logoColor=white" alt="Neo4j">
+  <img src="https://img.shields.io/badge/Vector%20DB-Qdrant-DC2626.svg?style=flat-square&logo=qdrant&logoColor=white" alt="Qdrant">
+  <img src="https://img.shields.io/badge/UI-NiceGUI%20Quasar-2d6a4f.svg?style=flat-square" alt="NiceGUI">
+  <img src="https://img.shields.io/badge/RAG-Hybrid%20Graph--RAG-b45309.svg?style=flat-square" alt="Hybrid Graph-RAG">
+  <img src="https://img.shields.io/badge/Agent-ReAct%20Loop-475569.svg?style=flat-square" alt="ReAct Loop">
+  <img src="https://img.shields.io/badge/License-GNU%20AGPLv3-0284c7.svg?style=flat-square" alt="GNU AGPLv3">
+</p>
+
+Hệ thống hỏi đáp về Lịch sử và Địa lý Việt Nam, kết hợp cơ sở dữ liệu vector và đồ thị tri thức để cung cấp câu trả lời có trích dẫn nguồn trang sách giúp người dùng tiện đối chiếu, kiểm chứng.
 
 
 <div align="center">
@@ -53,7 +64,7 @@ Văn bản sách được tiền xử lý và băm đoạn có cấu trúc theo 
 
 <div align="center">
   <img src="docs/assets/document-chunking-and-extraction.png" alt="Quy trình băm đoạn và trích xuất tri thức" width="850"/>
-  <p><i>Phân đoạn văn bản thành 9.052 đoạn tư liệu có cấu trúc</i></p>
+  <p><i>Phân đoạn văn bản thành các đoạn tư liệu có cấu trúc</i></p>
 </div>
 
 ### 4.2. Kho dữ liệu vector (Qdrant)
@@ -61,6 +72,11 @@ Văn bản sách được tiền xử lý và băm đoạn có cấu trúc theo 
 - Lưu trữ toàn bộ **9.052 đoạn tư liệu** tại collection `vnhis`.
 - Biểu diễn ngữ nghĩa bằng vector 768 chiều (mô hình `bkai-foundation-models/vietnamese-bi-encoder`, tính khoảng cách Cosine).
 - Mỗi bản ghi lưu kèm mã định danh `chunk_id` cùng toàn văn trang sách để phục vụ tìm kiếm và đọc trực tiếp.
+
+<div align="center">
+  <img src="docs/assets/qdrant-collection-vnhis.png" alt="Giao diện quản lý collection vnhis trên Qdrant" width="850"/>
+  <p><i>Trạng thái lưu trữ và chỉ mục 9.052 vector embedding trên Qdrant Vector Database</i></p>
+</div>
 
 ### 4.3. Đồ thị tri thức (Neo4j)
 
