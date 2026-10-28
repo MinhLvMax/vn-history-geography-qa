@@ -10,74 +10,10 @@ Hệ thống được tổ chức theo mô hình Clean Architecture (Ports & Ada
 
 Toàn bộ quy trình từ khâu chuẩn bị dữ liệu đến khâu phục vụ hỏi đáp thông minh thời gian thực được thể hiện qua sơ đồ dưới đây:
 
-```mermaid
-flowchart TB
-    %% --- SUBGRAPH 1: OFFLINE ETL PIPELINE ---
-    subgraph ETL["📦 1. OFFLINE ETL & KNOWLEDGE BUILDER"]
-        direction TB
-        RawData["📚 Raw Historical Documents<br><b>Vietnam History 15-Volume Series (PDF)</b>"]
-        Chunking["✂️ Document Preprocessing & Chunking<br><b>(9,052 Semantic Chunks)</b>"]
-        EmbedModel["🔤 Text Embedding Model<br><i>(Dense Representation)</i>"]
-        LLMExtract["🧠 LLM Information Extraction<br><i>(Entity & Relation Triplets)</i>"]
-        
-        RawData --> Chunking
-        Chunking -->|"Vectorization"| EmbedModel
-        Chunking -->|"Structured Extraction"| LLMExtract
-    end
-
-    %% --- SUBGRAPH 2: HYBRID STORAGE LAYER ---
-    subgraph Storage["💾 2. HYBRID STORAGE LAYER"]
-        direction TB
-        Qdrant[("🎯 Vector Database (Qdrant)<br>• 9,052 Document Chunks<br>• Dense Retrieval (Cosine Similarity)")]
-        Neo4j[("🕸️ Graph Database (Neo4j)<br>• 91,572 Entities (Nodes)<br>• 112,830 Relations (Edges)")]
-        
-        EmbedModel -->|"Upsert Vectors & Payloads"| Qdrant
-        LLMExtract -->|"Ingest Knowledge Triplets"| Neo4j
-        Neo4j <.->|"Cross-reference via chunk_id"| Qdrant
-    end
-
-    %% --- SUBGRAPH 3: ONLINE SERVING HYBRID AGENT ---
-    subgraph AgentServing["🤖 3. HYBRID GRAPH-RAG AGENT (ONLINE SERVING)"]
-        direction TB
-        User(["👤 End User"])
-        
-        subgraph CoreAgent["Agentic Reasoning & Orchestration (ReAct Loop)"]
-            direction TB
-            InputHandler["📥 Query Parser & Intent Analysis"]
-            Thought["LLM Reasoning Engine (Thought)"]
-            Action{"Tool Decision & Execution<br>(Action)"}
-            Tools["🛠️ Agent Toolset"]
-            Obs["Ground-Truth Observations<br>(Observation)"]
-            
-            InputHandler --> Thought
-            Thought --> Action
-            Action -->|"Invoke Tool"| Tools
-            Tools -->|"Return Raw Context"| Obs
-            Obs -->|"Iterate Reasoning"| Thought
-        end
-        
-        ResponseGen["📝 Grounded Response Generator<br><b>(Strict Citation & Verification)</b>"]
-        
-        User -->|"Historical Domain Query"| InputHandler
-        Thought -->|"Final Answer Convergence"| ResponseGen
-        ResponseGen -->|"Synthesized Answer with Citations"| User
-    end
-
-    %% --- CONNECTIONS BETWEEN AGENT TOOLS & STORAGE ---
-    Tools <-->|"Traverse Entity Graph & Neighbors"| Neo4j
-    Tools <-->|"Dense Semantic Search & Range Chunks"| Qdrant
-
-    %% --- STYLING (THEMES & PALETTE) ---
-    classDef etlStyle fill:#f0f7ff,stroke:#0366d6,stroke-width:2px,color:#0366d6;
-    classDef storageStyle fill:#fbf0ff,stroke:#8a3ffc,stroke-width:2px,color:#6929c4;
-    classDef agentStyle fill:#f6ffed,stroke:#52c41a,stroke-width:2px,color:#237804;
-    classDef dbStyle fill:#e6f7ff,stroke:#1890ff,stroke-width:2px,color:#0050b3;
-
-    class ETL etlStyle;
-    class Storage storageStyle;
-    class AgentServing agentStyle;
-    class Qdrant,Neo4j dbStyle;
-```
+<div align="center">
+  <img src="docs/assets/hybrid-graph-rag-architecture.png" alt="Kiến trúc tổng thể hệ thống Hybrid Graph-RAG" width="850"/>
+  <p><i>Sơ đồ kiến trúc tổng thể: Pipeline Offline ETL, Tầng lưu trữ lai (Neo4j & Qdrant) và Luồng phục vụ trực tuyến của ReAct Agent</i></p>
+</div>
 
 ---
 
