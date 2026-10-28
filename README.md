@@ -98,8 +98,8 @@ Từ các đoạn tư liệu gốc, các thực thể và mối quan hệ lịch
 ### 4.4. Quy trình chuẩn bị dữ liệu
 
 Dữ liệu phục vụ cho hệ thống được chuẩn bị thông qua hai quy trình xử lý độc lập trước khi nạp vào cơ sở dữ liệu:
-- **Quy trình nhúng vector**: Thực hiện phân đoạn văn bản và chuyển đổi thành vector để nạp vào Qdrant (tham khảo tại [`text-embedding`](../text-embedding)).
-- **Quy trình trích xuất đồ thị**: Sử dụng mô hình ngôn ngữ để bóc tách thực thể và quan hệ theo lược đồ định sẵn rồi nạp vào Neo4j (tham khảo tại [`text2triple`](../text2triple)).
+- **Quy trình nhúng vector**: Thực hiện phân đoạn văn bản và chuyển đổi thành vector để nạp vào Qdrant (tham khảo tại [`text-embedding`]([../text-embedding](https://github.com/MinhLvMax/text-embedding.git))).
+- **Quy trình trích xuất đồ thị**: Sử dụng mô hình ngôn ngữ để bóc tách thực thể và quan hệ theo lược đồ định sẵn rồi nạp vào Neo4j (tham khảo tại [`text2triple`]([../text2triple](https://github.com/MinhLvMax/text2triple.git))).
 
 ---
 
